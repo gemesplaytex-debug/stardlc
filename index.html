@@ -57,6 +57,15 @@ nav .brand img{width:36px;height:36px;border-radius:50%;object-fit:contain;backg
 nav a{color:var(--mut);text-decoration:none;font-size:14px;font-weight:500;transition:.25s}
 nav a:hover{color:var(--acc3)}
 nav .links{display:flex;gap:22px;margin-left:auto}
+nav .links .soon-tab{
+  color:var(--acc3);font-weight:700;letter-spacing:.06em;position:relative;white-space:nowrap;
+}
+nav .links .soon-tab::after{
+  content:"";position:absolute;left:0;right:0;bottom:-6px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--acc3),transparent);
+  animation:soonglow 2.4s ease-in-out infinite;
+}
+@keyframes soonglow{0%,100%{opacity:.25}50%{opacity:1}}
 @media(max-width:760px){nav .links{display:none}}
 
 .btn{display:inline-block;padding:14px 32px;border-radius:14px;font-weight:700;font-size:15px;text-decoration:none;transition:.25s;cursor:pointer;border:none}
@@ -182,7 +191,7 @@ footer a{color:var(--acc3);text-decoration:none}
 <nav class="glass">
   <div class="brand"><img src="assets/logo.png" alt=""> StarDLC</div>
   <div class="links">
-    <a href="#features">Фичи</a><a href="#modules">Модули</a><a href="#screens">Скрины</a><a href="#reviews">Отзывы</a><a href="#faq">FAQ</a>
+    <a href="#features">Фичи</a><a href="#modules">Модули</a><a href="#screens">Скрины</a><a href="#reviews">Отзывы</a><a href="#faq">FAQ</a><a href="coming-soon.html" class="soon-tab">COMING SOON</a>
   </div>
   <a href="#download" class="btn primary sm">Скачать</a>
 </nav>
@@ -319,7 +328,7 @@ function swap(fn){grid.classList.add('swap');setTimeout(()=>{fn();grid.classList
 search.addEventListener('input',()=>{const q=search.value.trim().toLowerCase();swap(()=>q?renderSearch(q):renderCat(curCat));});
 renderCat(curCat);
 
-const REV_NAMES=['Даниил','Кирилл','Макс','Артём','Никита','Егор','Тимур','Глеб','Санёк','xX_Pro_Xx','NightWare','pivozavr','quartz','Vladimir'];
+const REV_NAMES=['faraon','w1zerd','Hirrs','This_Dvoroviy','Sniper228rw','trfxcvii','DeepSeek','телпила #антикоч','Flick1337','xX_Pro_Xx','NightWare','pivozavr','quartz','Vladimir'];
 // ЗАМЕНИ: реальные сервера, где крутится клиент
 const REV_SERVERS=['HolyWorld','FunTime','VimeWorld','ReallyWorld','Mustard','Excalibur','Aurora','Neofusion'];
 const REV_TEXTS=[
