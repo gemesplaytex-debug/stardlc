@@ -66,7 +66,36 @@ nav .links .soon-tab::after{
   animation:soonglow 2.4s ease-in-out infinite;
 }
 @keyframes soonglow{0%,100%{opacity:.25}50%{opacity:1}}
-@media(max-width:760px){nav .links{display:none}}
+/* ===== мобильная навигация: обычные ссылки скрываем, COMING SOON оставляем ===== */
+@media(max-width:760px){
+  nav{gap:10px;padding:9px 12px}
+  nav .brand{font-size:13px;gap:7px}
+  nav .brand img{width:28px;height:28px}
+  nav .links{gap:0;margin-left:auto}
+  nav .links a:not(.soon-tab){display:none}
+  nav .links .soon-tab{font-size:11px;letter-spacing:.03em}
+  nav > a.btn.sm{padding:7px 12px;font-size:12px}
+}
+@media(max-width:400px){
+  nav .brand{font-size:0;gap:0}
+  nav .brand img{width:26px;height:26px}
+  nav .links .soon-tab{font-size:10px}
+}
+
+/* мобильная кнопка COMING SOON в герое — видна только на телефоне */
+.soon-mobile{display:none}
+@media(max-width:760px){
+  .soon-mobile{
+    display:inline-flex;align-items:center;justify-content:center;gap:10px;
+    margin-top:26px;padding:12px 22px;border-radius:14px;text-decoration:none;
+    font-family:Unbounded,sans-serif;font-weight:800;font-size:13px;letter-spacing:.10em;
+    color:var(--acc3);border:1px solid rgba(168,85,247,.35);
+    background:linear-gradient(135deg,rgba(168,85,247,.16),rgba(124,58,237,.06));
+    animation:soonpulse 2.4s ease-in-out infinite;
+  }
+  .soon-mobile span{font-family:Manrope,sans-serif;font-weight:600;font-size:11px;letter-spacing:.05em;color:var(--mut)}
+}
+@keyframes soonpulse{0%,100%{box-shadow:0 0 0 rgba(168,85,247,0)}50%{box-shadow:0 0 26px rgba(168,85,247,.35)}}
 
 .btn{display:inline-block;padding:14px 32px;border-radius:14px;font-weight:700;font-size:15px;text-decoration:none;transition:.25s;cursor:pointer;border:none}
 .btn.primary{background:linear-gradient(135deg,var(--acc2),var(--acc3));color:#fff;box-shadow:0 0 28px rgba(168,85,247,.45)}
@@ -211,6 +240,7 @@ footer a{color:var(--acc3);text-decoration:none}
     <a href="#download" class="btn primary">Скачать клиент</a>
     <a href="#modules" class="btn ghost">Смотреть модули</a>
   </div>
+  <a href="coming-soon.html" class="soon-mobile">COMING SOON<span>2.5 → 3.0</span></a>
 </header>
 
 <div class="stats glass reveal">
