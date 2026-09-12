@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>StarDLC — COMING SOON</title>
+<meta name="description" content="StarDLC 2.5 → 3.0. Скоро.">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#06030d; --txt:#e9e4f5; --mut:#9a8fb8;
+  --acc:#a855f7; --acc2:#7c3aed; --acc3:#c084fc;
+  --line:rgba(168,85,247,.22);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{
+  min-height:100vh;color:var(--txt);font-family:Manrope,sans-serif;overflow-x:hidden;
+  background:
+    radial-gradient(1100px 700px at 75% 8%, rgba(124,58,237,.16), transparent 60%),
+    radial-gradient(900px 650px at 15% 85%, rgba(76,29,149,.20), transparent 60%),
+    radial-gradient(700px 500px at 50% 45%, rgba(88,28,135,.12), transparent 65%),
+    var(--bg);
+  background-attachment:fixed;
+  display:flex;flex-direction:column;align-items:center;
+  padding:34px 20px 60px;
+}
+h1,h2,h3{font-family:Unbounded,sans-serif}
+
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.orb{position:absolute;border-radius:50%}
+.o1{width:70vw;height:70vw;background:radial-gradient(circle,rgba(88,28,135,.45),transparent 68%);top:-25vw;left:-20vw;animation:drift 18s ease-in-out infinite alternate}
+.o2{width:60vw;height:60vw;background:radial-gradient(circle,rgba(30,27,75,.55),transparent 68%);bottom:-25vw;right:-15vw;animation:drift 22s ease-in-out infinite alternate-reverse}
+@keyframes drift{to{transform:translate(6vw,4vw) scale(1.08)}}
+
+.back{
+  align-self:flex-start;color:var(--mut);text-decoration:none;font-size:14px;
+  border:1px solid var(--line);border-radius:999px;padding:8px 16px;
+  background:rgba(255,255,255,.03);transition:.25s;
+}
+.back:hover{color:var(--txt);border-color:var(--acc);background:rgba(168,85,247,.10)}
+
+.wrap{max-width:760px;width:100%;text-align:center;margin-top:46px}
+.logo{width:92px;height:92px;border-radius:22px;margin:0 auto 22px;display:block;
+      box-shadow:0 0 60px rgba(168,85,247,.35)}
+h1{
+  font-size:clamp(38px,9vw,86px);line-height:1.02;font-weight:800;letter-spacing:-.02em;
+  background:linear-gradient(96deg,#e9e4f5 10%,var(--acc3) 48%,var(--acc) 92%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.ver{margin:14px 0 8px;font-family:Unbounded,sans-serif;font-size:15px;letter-spacing:.22em;color:var(--acc3)}
+.tag{color:var(--mut);max-width:480px;margin:0 auto 38px;line-height:1.7}
+
+.hints{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.hint{
+  border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.03);
+  padding:14px 18px;text-align:left;cursor:pointer;user-select:none;
+  transition:.3s;position:relative;overflow:hidden;
+}
+.hint:hover{border-color:var(--acc);background:rgba(168,85,247,.07)}
+.hint .mask{
+  display:block;color:var(--mut);filter:blur(5px);opacity:.75;transition:.35s;
+  pointer-events:none;
+}
+.hint.open .mask{filter:none;opacity:1;color:var(--txt)}
+.hint .tip{
+  position:absolute;right:16px;top:50%;transform:translateY(-50%);
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc3);opacity:.85;
+}
+.hint.open .tip{opacity:0}
+
+.foot{margin-top:46px;color:var(--mut);font-size:13px;line-height:1.8}
+.foot a{color:var(--acc3);text-decoration:none}
+.foot a:hover{text-decoration:underline}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--acc3);
+     margin-right:8px;vertical-align:1px;animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+</style>
+</head>
+<body>
+<div class="bg"><div class="orb o1"></div><div class="orb o2"></div></div>
+
+<a class="back" href="index.html">← на главную</a>
+
+<div class="wrap">
+  <img class="logo" src="assets/logo.png" alt="StarDLC">
+  <h1>COMING SOON</h1>
+  <p class="ver">2.5 → 3.0</p>
+  <p class="tag">Раньше мы были модом. Теперь будем чем-то больше.<br>Ниже — то, что мы строим. Нажми на строку, чтобы прочитать.</p>
+
+  <div class="hints">
+    <div class="hint" onclick="this.classList.toggle('open')">
+      <span class="mask">свой лоадер вместо папки mods</span>
+      <span class="tip">нажми</span>
+    </div>
+    <div class="hint" onclick="this.classList.toggle('open')">
+      <span class="mask">обе сборки — в одном окне</span>
+      <span class="tip">нажми</span>
+    </div>
+    <div class="hint" onclick="this.classList.toggle('open')">
+      <span class="mask">твой ник перестанет быть просто ником</span>
+      <span class="tip">нажми</span>
+    </div>
+    <div class="hint" onclick="this.classList.toggle('open')">
+      <span class="mask">ты услышишь тех, кто играет не с тобой</span>
+      <span class="tip">нажми</span>
+    </div>
+    <div class="hint" onclick="this.classList.toggle('open')">
+      <span class="mask">и то, что ты правил руками, станет одним движением</span>
+      <span class="tip">нажми</span>
+    </div>
+  </div>
+
+  <p class="foot">
+    <span class="dot"></span>мы не называем дат. просто жди<br>
+    <a href="index.html">StarDLC</a> · 2.5 — первый шаг, 3.0 — всё, что за ним
+  </p>
+</div>
+
+</body>
+</html>
