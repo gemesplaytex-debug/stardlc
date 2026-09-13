@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark">
-<title>StarDLC — бесплатный чит-клиент для Minecraft 1.21.4</title>
-<meta name="description" content="StarDLC build 2.1 — бесплатный клиент для Minecraft 1.21.4. 122 модуля, нейро-аура, liquid glass GUI. Скоро 1.21.11.">
+<title>StarDLC 2.2 — бесплатный чит-клиент для Minecraft 1.21.4</title>
+<meta name="description" content="StarDLC build 2.2 — бесплатный клиент для Minecraft 1.21.4. 116 модулей, текст песни в воздухе, плеер в динамическом острове, нейро-аура и liquid glass GUI.">
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
@@ -120,6 +120,9 @@ h2 span{color:var(--acc3)}
 .badge{padding:8px 18px;border-radius:999px;font-size:13px;font-weight:700;letter-spacing:.5px}
 .badge.free{background:linear-gradient(135deg,#16a34a,#4ade80);color:#052e16}
 .badge.neutral{background:rgba(168,85,247,.10);border:1px solid var(--line);color:var(--acc3)}
+.badge.new{background:linear-gradient(135deg,var(--acc2),var(--acc3));color:#fff;box-shadow:0 0 22px rgba(168,85,247,.45)}
+/* плашка NEW на карточках */
+.card .new-tag{position:absolute;top:16px;right:16px;font-size:10px;font-weight:800;letter-spacing:.12em;padding:4px 9px;border-radius:999px;background:linear-gradient(135deg,var(--acc2),var(--acc3));color:#fff;box-shadow:0 0 16px rgba(168,85,247,.5)}
 .cta{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
 .sp{position:absolute;color:#fff;font-size:20px;animation:spark 2.6s ease-in-out infinite}
 .sp:nth-child(1){top:22%;left:24%}.sp:nth-child(2){top:30%;right:22%;animation-delay:.8s}.sp:nth-child(3){bottom:26%;left:30%;animation-delay:1.5s}
@@ -164,6 +167,8 @@ h2 span{color:var(--acc3)}
 .pill{border-radius:var(--r-pill);padding:7px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(168,85,247,.18);font-size:13px;color:#cfc6e4;transition:.2s var(--ease);cursor:default}
 .pill:hover{border-color:var(--acc);color:#fff;box-shadow:0 0 14px rgba(168,85,247,.35);transform:translateY(-1px)}
 .pill .tc{font-size:10px;color:var(--acc3);margin-left:7px;text-transform:uppercase;letter-spacing:.5px}
+.pill.isnew{border-color:var(--acc);color:#fff;box-shadow:0 0 14px rgba(168,85,247,.28)}
+.pill.isnew::after{content:'NEW';font-size:9px;font-weight:800;letter-spacing:.08em;margin-left:7px;color:var(--acc3)}
 @media(max-width:760px){.cwin-body{flex-direction:column}.cwin-side{width:100%;flex-direction:row;overflow-x:auto;border-right:none;border-bottom:1px solid var(--line)}.cat-row{white-space:nowrap}}
 
 .shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
@@ -220,7 +225,7 @@ footer a{color:var(--acc3);text-decoration:none}
 <nav class="glass">
   <div class="brand"><img src="assets/logo.png" alt=""> StarDLC</div>
   <div class="links">
-    <a href="#features">Фичи</a><a href="#modules">Модули</a><a href="#screens">Скрины</a><a href="#reviews">Отзывы</a><a href="#faq">FAQ</a><a href="coming-soon.html" class="soon-tab">COMING SOON</a>
+    <a href="#whatsnew">Новое</a><a href="#features">Фичи</a><a href="#modules">Модули</a><a href="#screens">Скрины</a><a href="#reviews">Отзывы</a><a href="#faq">FAQ</a><a href="coming-soon.html" class="soon-tab">COMING SOON</a>
   </div>
   <a href="#download" class="btn primary sm">Скачать</a>
 </nav>
@@ -229,12 +234,12 @@ footer a{color:var(--acc3);text-decoration:none}
   <span class="sp">✦</span><span class="sp">✦</span><span class="sp">✦</span>
   <div class="logo-wrap"><img src="assets/logo.png" alt="StarDLC logo"></div>
   <h1>StarDLC</h1>
-  <p class="tag">Бесплатный чит-клиент для Minecraft <b>1.21.4</b>. <b>122 модуля</b>, нейро-аура и liquid glass GUI. Поддержка <b>1.21.11</b> уже на подходе.</p>
+  <p class="tag">Бесплатный чит-клиент для Minecraft <b>1.21.4</b>. <b>116 модулей</b>, текст песни прямо в воздухе, плеер в динамическом острове, нейро-аура и liquid glass GUI.</p>
   <div class="badges">
     <span class="badge free">FREE</span>
-    <span class="badge neutral">BUILD 2.1</span>
-    <span class="badge neutral">122 МОДУЛЯ</span>
-    <span class="badge neutral">MC 1.21.4 → 1.21.11</span>
+    <span class="badge new">BUILD 2.2</span>
+    <span class="badge neutral">116 МОДУЛЕЙ</span>
+    <span class="badge neutral">MC 1.21.4</span>
   </div>
   <div class="cta">
     <a href="#download" class="btn primary">Скачать клиент</a>
@@ -244,15 +249,26 @@ footer a{color:var(--acc3);text-decoration:none}
 </header>
 
 <div class="stats glass reveal">
-  <div class="stat"><div class="v">2.1</div><div class="k">билд</div></div>
+  <div class="stat"><div class="v">2.2</div><div class="k">билд</div></div>
   <div class="stat"><div class="v">1.21.4</div><div class="k">версия MC</div></div>
-  <div class="stat"><div class="v">122</div><div class="k">модуля</div></div>
+  <div class="stat"><div class="v">116</div><div class="k">модулей</div></div>
   <div class="stat"><div class="v">0 ₽</div><div class="k">цена навсегда</div></div>
 </div>
 
+<section id="whatsnew">
+  <h2>Что нового в <span>2.2</span></h2>
+  <p class="sub">Главное в этом обновлении: музыка стала частью интерфейса, а слова любимых треков теперь летают вокруг тебя.</p>
+  <div class="grid">
+    <div class="card glass reveal"><span class="new-tag">NEW</span><div class="icon"><svg viewBox="0 0 24 24"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg></div><h3>Музыка в «острове»</h3><p>Плеер переехал прямо в динамический остров: обложка, название и исполнитель, play / pause, предыдущий и следующий трек. Автоопределение Яндекс Музыки и Spotify — остров показывает иконку источника.</p></div>
+    <div class="card glass reveal"><span class="new-tag">NEW</span><div class="icon"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/><circle cx="19" cy="18" r="2"/></svg></div><h3>Lyrics — текст песни в воздухе</h3><p>Слова песни собираются из букв вокруг тебя, живут несколько секунд и разлетаются. Есть режим караоке в такт музыке, цвет можно взять из обложки альбома. Кириллица поддерживается полностью.</p></div>
+    <div class="card glass reveal"><div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 8l7-5 7 5"/><path d="M5 16l7 5 7-5"/></svg></div><h3>Симметричная анимация</h3><p>Буквы слетаются при появлении и точно так же разлетаются при исчезновении — левые символы ведут за собой остальные. Длинные строки переносятся и не вылезают за экран.</p></div>
+    <div class="card glass reveal"><div class="icon"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div><h3>13 шрифтов</h3><p>Обычный, средний, полужирный, жирный, тонкий, округлый, Minecraft, массивный, узкий, геометрический, антиква, рукописный и дисплейный — под настроение и под сборку.</p></div>
+  </div>
+</section>
+
 <section id="features">
   <h2>Топовые <span>модули</span></h2>
-  <p class="sub">То, за что StarDLC любят с первой установки. Полное меню из 122 модулей — ниже.</p>
+  <p class="sub">То, за что StarDLC любят с первой установки. Полное меню из 116 модулей — ниже.</p>
   <div class="grid">
     <div class="card glass reveal"><div class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><h3>Aura (нейро)</h3><p>Умная аура с выбором таргета и просчётом ударов. Бьёт плавно, выглядит чисто. Туториал по нейро-ауре — внутри архива с клиентом.</p></div>
     <div class="card glass reveal"><div class="icon"><svg viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div><h3>GUI: Liquid Glass</h3><p>Меню — чистый liquid glass: полупрозрачные слои, световые блики, преломления и плавные анимации 280ms. Открывается на RCTRL, выглядит дороже платных клиентов.</p></div>
@@ -260,14 +276,16 @@ footer a{color:var(--acc3);text-decoration:none}
     <div class="card glass reveal"><div class="icon"><svg viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1z"/><circle cx="12" cy="12" r="3"/></svg></div><h3>ESP-пакет</h3><p>TargetEsp, StorageEsp, SoundEsp и Tracers: видишь и слышишь всё в радиусе чанков, даже сквозь стены и руду.</p></div>
     <div class="card glass reveal"><div class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/><rect x="8" y="3" width="8" height="8"/></svg></div><h3>Scaffold</h3><p>Мосты со скоростью света: блоки ставятся сами, ровно в линию, даже на спринте и в прыжке.</p></div>
     <div class="card glass reveal"><div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.9 2.6L22.5 18l-2.6.9L19 21.5l-.9-2.6L15.5 18l2.6-.9z"/></svg></div><h3>Ambience</h3><p>Кастомное фиолетовое небо, дождь и частицы — как на скринах. Клиент выглядит дорого даже с выключенными чит-функциями.</p></div>
+    <div class="card glass reveal"><div class="icon"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></div><h3>Стабильные 120+ FPS</h3><p>Рендер текста и эффектов переписан на нулевые аллокации в кадре — клиент не теряет кадры даже с включённым Lyrics.</p></div>
+    <div class="card glass reveal"><div class="icon"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M8 10h8M8 14h5"/></svg></div><h3>Динамический остров</h3><p>Живой виджет сверху: статусы, уведомления и теперь музыка — всё в одном месте, не отвлекая от игры.</p></div>
   </div>
 </section>
 
 <section id="modules">
-  <h2>Все <span>122 модуля</span></h2>
-  <p class="sub">Окно клиента прямо на сайте: выбирай категорию или ищи модуль поиском.</p>
+  <h2>Все <span>116 модулей</span></h2>
+  <p class="sub">Окно клиента прямо на сайте: выбирай категорию или ищи модуль поиском. Список актуален для билда 2.2.</p>
   <div class="cwin reveal">
-    <div class="cwin-bar"><span class="dot"></span><b>StarDLC</b> · build 2.1 · online<span class="right">MC 1.21.4 · 122 FPS</span></div>
+    <div class="cwin-bar"><span class="dot"></span><b>StarDLC</b> · build 2.2 · online<span class="right">MC 1.21.4 · 116 мод.</span></div>
     <div class="cwin-body">
       <aside class="cwin-side" id="catSide"></aside>
       <div class="cwin-main">
@@ -281,7 +299,7 @@ footer a{color:var(--acc3);text-decoration:none}
 
 <section id="screens">
   <h2>Скрины <span>из игры</span></h2>
-  <p class="sub">Реальные кадры с билда 2.1, без фотошопа.</p>
+  <p class="sub">Реальные кадры с билда 2.2, без фотошопа.</p>
   <div class="shots">
     <div class="shot reveal"><img src="assets/screen1.png" alt="" onerror="this.closest('.shot').classList.add('empty');this.remove()"><div class="cap">Меню клиента: liquid glass, поиск и категории</div></div>
     <div class="shot reveal"><img src="assets/screen2.png" alt="" onerror="this.closest('.shot').classList.add('empty');this.remove()"><div class="cap">Ambience: кастомное небо и погода в игре</div></div>
@@ -304,16 +322,19 @@ footer a{color:var(--acc3);text-decoration:none}
     <div class="faq-item glass"><button class="faq-q">Где лежат конфиги?<span>+</span></button><div class="faq-a"><p>Папка с конфигами создаётся <b>прямо на рабочем столе</b> после первого запуска. Если не нашёл — проверь антивирус, мог сожрать.</p></div></div>
     <div class="faq-item glass"><button class="faq-q">Где тутор по нейро-ауре?<span>+</span></button><div class="faq-a"><p>Гайд по нейро-ауре лежит <b>внутри zip-архива</b> с клиентом. Просто нажми «Скачать», распакуй архив — файл с тутором там.</p></div></div>
     <div class="faq-item glass"><button class="faq-q">Это реально бесплатно?<span>+</span></button><div class="faq-a"><p>Да. StarDLC полностью бесплатный, без подписок, ключей и скрытых платных модулей. Было и будет.</p></div></div>
-    <div class="faq-item glass"><button class="faq-q">Какие версии поддерживаются?<span>+</span></button><div class="faq-a"><p>Сейчас — <b>1.21.4</b> (билд 2.1). Поддержка <b>1.21.11</b> уже в работе, выйдет в ближайшем апдейте.</p></div></div>
+    <div class="faq-item glass"><button class="faq-q">Какие версии поддерживаются?<span>+</span></button><div class="faq-a"><p>Сейчас — <b>1.21.4</b>, это билд <b>2.2</b>. Клиент ставится как мод на Fabric.</p></div></div>
+    <div class="faq-item glass"><button class="faq-q">Как установить?<span>+</span></button><div class="faq-a"><p>Оба jar-файла из архива — в папку <b>mods</b>. Запускать <b>строго через Legacy Launcher</b>, через обычный лаунчер не пойдёт.</p></div></div>
+    <div class="faq-item glass"><button class="faq-q">Откуда берётся текст песен?<span>+</span></button><div class="faq-a"><p>Из открытых баз — <b>LRCLIB, NetEase, Genius</b>. Если у трека есть тайминги, строки идут в такт музыке. Если текста нет вообще — покажем название трека, а не пустоту. Для очень редких и совсем свежих треков текста может не быть.</p></div></div>
+    <div class="faq-item glass"><button class="faq-q">Музыка в острове — это что?<span>+</span></button><div class="faq-a"><p>Плеер прямо в динамическом острове: обложка, название, исполнитель и кнопки play / pause, назад / вперёд. Работает с <b>Яндекс Музыкой и Spotify</b> — остров сам показывает иконку источника.</p></div></div>
   </div>
 </section>
 
 <section id="download">
   <div class="final glass reveal">
     <h2>Забирай <span>StarDLC</span></h2>
-    <p>Билд 2.1 для Minecraft 1.21.4. Запуск через <b>Legacy Launcher</b>. Тутор по нейро-ауре внутри архива.</p>
-    <a href="https://workupload.com/file/Ad3xvrZFDUR" target="_blank" rel="noopener" class="btn primary">Скачать бесплатно</a>
-    <div class="note">Windows 10/11 · папка конфигов появится на рабочем столе</div>
+    <p>Билд <b>2.2</b> для Minecraft 1.21.4: музыка в острове, текст песни в воздухе, 116 модулей. Запуск через <b>Legacy Launcher</b>.</p>
+    <a href="https://workupload.com/file/avrarNppfUt" target="_blank" rel="noopener" class="btn primary">Скачать 2.2 бесплатно</a>
+    <div class="note">Оба jar — в папку <b>mods</b> · Windows 10/11 · папка конфигов появится на рабочем столе</div>
   </div>
 </section>
 
@@ -325,12 +346,14 @@ footer a{color:var(--acc3);text-decoration:none}
 
 <script>
 const MODULES={
-COMBAT:['Aura','AimAssist','AimBot','AntiBot','AntiAim','KnockbackTweaks','Criticals','Hitboxes','TriggerBot','Velocity','SuperFirework','BackTrack','ElytraTarget','AutoExplosion','AutoAnchor','AutoArmor','AutoTotem','AutoSoup','AutoPotion','AutoThrow','AutoSprint','ElytraStrafe'],
-MOVEMENT:['Speed','Strafe','Flight','Spider','Timer','NoSlow','HighJump','WaterSpeed','AirStuck','NoFall','NoPush','NoInteract','NoRotate','NoDelay','GuiMove','GrimGlide','ElytraUtils','Blink','FreeCamera','Step','Jesus','SafeWalk'],
-VISUALS:['Interface','EspModule','TargetEsp','StorageEsp','SoundEsp','Tracers','XRay','ChunkDebug','Fov','NoBob','NoPortal','CustomFog','AntiInvisible','Ambience','SwingAnimation','KillEffects','DonateEffects','ObjectInfo','Prediction','PositionPredict','WardenHelper'],
-PLAYER:['Scaffold','Nuker','AutoFarm','AutoFish','AutoMend','AutoMount','AutoPanic','AutoRespawn','AutoTool','AutoWalk','AutoLeave','AutoJoin','AutoAuth','AutoAccept','AutoBuy','AutoResell','AutoDuels','AutoInvisible','AutoShulker','AutoEat','AutoBrew','MiddleClick','AutoSwap','BootsSwap','Stash','Refill','InvCleaner','InvBuilder','InvUtils','ItemPickup','ItemDumper','InventoryCleaner'],
-OTHER:['Menu','Sounds','Waypoints','TntTimer','PotsTimer','Removals','NameProtect','Panic','Test','Adminsky','Stealer','Tracker','RocknetListener','GlobalsMenu','GrassModule','KtLeave','RussianRoulette','MacroMenu','BaseFinder','DeathCords','EffectRemover','ClanUpgrade','ClickThrough','AssistModule','AuctionModule']
+COMBAT:['Aura','Aim Assist','Aim Bot','Anti Bot','Auto Anchor','Auto Armor','Auto Explosion','Auto Potion','Auto Soup','Auto Throw','Auto Totem','Back Track','Criticals','Elytra Target','Hitboxes','Knockback Tweaks','Trigger Bot','Velocity'],
+MOVEMENT:['Air Stuck','Auto Sprint','Elytra Strafe','Flight','Grim Glide','High Jump','No Slow','Speed','Spider','Strafe','Super Firework','Timer','Water Speed'],
+VISUALS:['Ambience','Anti Invisible','Beautifully','Cinematic Camera','Custom Fog','Donate Effects','ESP','Freelook','GrassierGrass','Interface','Kill Effects','Lyrics','Menu','Object Info','Position Predict','Pots Timer','Prediction','Removals','Sound ESP','Storage ESP','Swing Animation','TNT Timer','Target ESP','Trap ESP','View Model','Warden Helper','Waypoints','World','XRay'],
+PLAYER:['Auto Bot','Auto Brew','Auto Eat','Auto Farm','Auto Invisible','Auto Leave','Auto Shulker','Auto Swap','Blink','Boots Swap','Clan Upgrade','Click Through','Elytra Utils','Free Camera','Gui Move','Inventory Utils','Middle Click','Mine Helper','No Delay','No Fall','No Interact','No Push','No Rotate','Nuker','Player Utils','Scaffold','Stealer','Target Pearl','Tracker'],
+OTHER:['Adminsky','AntiAim','Assist','Auction','Auto Accept','Auto Auth','Auto Buy','Auto Duels','Auto Join','Auto Resell','Base Finder','Death Cords','Effect Remover','Fast Item Use','Globals Menu','Inventory Builder','Inventory Cleaner','Item Dumper','Item Pickup','KT Leave','Macro Menu','Name Protect','Panic','Russian Roulette','Sounds','Test','Web Utils']
 };
+const NEW_MODULES=new Set(['Lyrics']);
+const pillOf=(m,c)=>`<span class="pill${NEW_MODULES.has(m)?' isnew':''}">${m}${c?`<span class="tc">${c}</span>`:''}</span>`;
 const side=document.getElementById('catSide'),grid=document.getElementById('modGrid'),
 catName=document.getElementById('modCatName'),modCount=document.getElementById('modCount'),
 search=document.getElementById('modSearch');
@@ -347,12 +370,12 @@ Object.keys(MODULES).forEach(c=>{
 });
 function renderCat(c){
   catName.textContent=c;modCount.textContent=MODULES[c].length+' мод.';
-  grid.innerHTML=MODULES[c].map(m=>`<span class="pill">${m}</span>`).join('');
+  grid.innerHTML=MODULES[c].map(m=>pillOf(m,'')).join('');
 }
 function renderSearch(q){
   const res=[];Object.keys(MODULES).forEach(c=>MODULES[c].forEach(m=>{if(m.toLowerCase().includes(q))res.push({m,c});}));
   catName.textContent='ПОИСК';modCount.textContent=res.length+' найдено';
-  grid.innerHTML=res.length?res.map(r=>`<span class="pill">${r.m}<span class="tc">${r.c}</span></span>`).join(''):'<span class="pill">ничего не нашлось, братан</span>';
+  grid.innerHTML=res.length?res.map(r=>pillOf(r.m,r.c)).join(''):'<span class="pill">ничего не нашлось, братан</span>';
 }
 function swap(fn){grid.classList.add('swap');setTimeout(()=>{fn();grid.classList.remove('swap');},200);}
 search.addEventListener('input',()=>{const q=search.value.trim().toLowerCase();swap(()=>q?renderSearch(q):renderCat(curCat));});
@@ -367,11 +390,15 @@ const REV_TEXTS=[
   'Revel Visuals калл, StarDLC топ, остальным соболезную',
   'ЕБАТЬ, я думал от фришки нечего ожидать, но ебать нурик перепенила, однозначно топ.',
   'Нейро-аура на {s} работает адекватно, таргета не палит. Наконец-то норм фри-клиент.',
-  'Поставил билд 2.1 на {s}, меню не лагает, фпс почти не проседает. Респект разрабу.',
+  'Поставил билд 2.2 на {s}, меню не лагает, фпс почти не проседает. Респект разрабу.',
   'Скептически относился к фри-клиентам, но StarDLC на {s} переубедил меня за вечер.',
   'ESP и X-Ray на {s} — просто праздник. Видно всё, что надо и даже что не надо.',
   'Обновили в день выхода версии игры. Для бесплатного клиента это пушка.',
-  'GUI на StarDLC — отдельный кайф, liquid glass, всё блестит. Лучший фри-клиент.'
+  'GUI на StarDLC — отдельный кайф, liquid glass, всё блестит. Лучший фри-клиент.',
+  'Текст песни в воздухе — это что-то. Стою на спавне {s}, слова собираются из букв и разлетаются. Очень атмосферно.',
+  'Музыка прям в острове: переключаю треки, не открывая ни одного меню. Мелочь, а кайф.',
+  'Взял 2.2 ради текста песен, остался ради острова. На {s} всё летает, просадок нет.',
+  '13 шрифтов на текст песни — подобрал под свой пак, теперь как в клипе. Кто делал — красавчик.'
 ];
 const AVA_COLORS=['#7c3aed','#a855f7','#c084fc','#6d28d9','#8b5cf6'];
 const feed=document.getElementById('revFeed');
