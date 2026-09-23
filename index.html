@@ -8,381 +8,2371 @@
 <meta name="description" content="StarDLC build 2.2 — бесплатный клиент для Minecraft 1.21.4. 116 модулей, текст песни в воздухе, плеер в динамическом острове, нейро-аура и liquid glass GUI.">
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-:root{
-  --bg:#06030d; --txt:#e9e4f5; --mut:#9a8fb8;
-  --acc:#a855f7; --acc2:#7c3aed; --acc3:#c084fc;
-  --line:rgba(168,85,247,.22);
-  --online:#5AC860;
-  --r-win:12px; --r-card:10px; --r-row:7px; --r-pill:5px;
-  --ease:cubic-bezier(0, 0.55, 0.45, 1);
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth;background:var(--bg)}
-body{
-  color:var(--txt);font-family:Manrope,sans-serif;overflow-x:hidden;
-  /* текстура вшита в body: даже если всё отвалится — фон тёмный, не белый */
-  background:
-    radial-gradient(1100px 700px at 75% 8%, rgba(124,58,237,.16), transparent 60%),
-    radial-gradient(900px 650px at 15% 85%, rgba(76,29,149,.20), transparent 60%),
-    radial-gradient(700px 500px at 50% 45%, rgba(88,28,135,.12), transparent 65%),
-    var(--bg);
-  background-attachment:fixed;
-}
-h1,h2,h3{font-family:Unbounded,sans-serif}
+/* ═══════════════════════════════════════════════════════════════
+   STARDLC 2.2 // MASTER LIQUID GLASS DESIGN SYSTEM
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  --bg:            #04020a;
+  --txt:           #f0eafa;
+  --mut:           #8b80a8;
+  --sub:           rgba(240,234,250,0.45);
 
-/* орбы БЕЗ filter:blur — дёшево для GPU, глюков на ПК не будет */
-.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
-.orb{position:absolute;border-radius:50%}
-.o1{width:70vw;height:70vw;background:radial-gradient(circle,rgba(88,28,135,.45),transparent 68%);top:-25vw;left:-20vw;animation:drift 18s ease-in-out infinite alternate}
-.o2{width:60vw;height:60vw;background:radial-gradient(circle,rgba(30,27,75,.55),transparent 68%);bottom:-25vw;right:-15vw;animation:drift 22s ease-in-out infinite alternate-reverse}
-@keyframes drift{to{transform:translate(6vw,4vw) scale(1.08)}}
-.bg::after{content:'';position:absolute;inset:0;background-image:radial-gradient(1px 1px at 20% 30%,#fff8,transparent),radial-gradient(1px 1px at 70% 20%,#fff6,transparent),radial-gradient(1.5px 1.5px at 40% 70%,#c084fc88,transparent),radial-gradient(1px 1px at 85% 60%,#fff5,transparent),radial-gradient(1px 1px at 55% 45%,#fff4,transparent),radial-gradient(1.5px 1.5px at 10% 80%,#a855f766,transparent);animation:tw 4s ease-in-out infinite alternate}
-@keyframes tw{to{opacity:.5}}
+  --acc:           #a855f7;
+  --acc2:          #7c3aed;
+  --acc3:          #c084fc;
+  --cyan:          #00f5d4;
+  --gold:          #fbbf24;
+  --online:        #4ade80;
 
-/* ===== LIQUID GLASS без backdrop-filter: градиентная рамка + внутренние блики ===== */
-.glass{
-  border:1px solid transparent;
-  background:
-    linear-gradient(160deg,rgba(26,13,44,.78),rgba(12,6,22,.72)) padding-box,
-    linear-gradient(135deg,rgba(255,255,255,.30),rgba(168,85,247,.38) 30%,rgba(255,255,255,.06) 55%,rgba(168,85,247,.30)) border-box;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.10),inset 0 -14px 28px rgba(124,58,237,.07),0 10px 30px rgba(0,0,0,.35);
-  border-radius:20px;
+  --glass-bg:      rgba(255,255,255,0.035);
+  --glass-hover:   rgba(255,255,255,0.065);
+  --glass-border:  rgba(255,255,255,0.11);
+  --glass-border2: rgba(255,255,255,0.22);
+  --glass-shadow:  0 20px 50px rgba(0,0,0,.65),
+                   0 0 35px rgba(124,58,237,.08),
+                   inset 0 1px 0 rgba(255,255,255,.26),
+                   inset 0 -1px 0 rgba(0,0,0,.45);
+  --glass-blur:    blur(24px) saturate(185%);
+
+  --r-lg:   22px;
+  --r-md:   16px;
+  --r-sm:   10px;
+  --r-pill: 9999px;
+
+  --font:  'Plus Jakarta Sans', system-ui, sans-serif;
+  --mono:  'Space Grotesk', monospace;
+  --ease:  cubic-bezier(0.16,1,0.3,1);
+
+  --line: rgba(168,85,247,.22);
 }
 
-nav{position:fixed;top:16px;left:50%;transform:translateX(-50%);width:min(1100px,94vw);padding:12px 22px;display:flex;align-items:center;gap:26px;z-index:10;border-radius:16px}
-nav .brand{display:flex;align-items:center;gap:10px;font-family:Unbounded;font-weight:800;font-size:15px}
-nav .brand img{width:36px;height:36px;border-radius:50%;object-fit:contain;background:#f2f4fa;padding:3px}
-nav a{color:var(--mut);text-decoration:none;font-size:14px;font-weight:500;transition:.25s}
-nav a:hover{color:var(--acc3)}
-nav .links{display:flex;gap:22px;margin-left:auto}
-nav .links .soon-tab{
-  color:var(--acc3);font-weight:700;letter-spacing:.06em;position:relative;white-space:nowrap;
-}
-nav .links .soon-tab::after{
-  content:"";position:absolute;left:0;right:0;bottom:-6px;height:1px;
-  background:linear-gradient(90deg,transparent,var(--acc3),transparent);
-  animation:soonglow 2.4s ease-in-out infinite;
-}
-@keyframes soonglow{0%,100%{opacity:.25}50%{opacity:1}}
-/* ===== мобильная навигация: обычные ссылки скрываем, COMING SOON оставляем ===== */
-@media(max-width:760px){
-  nav{gap:10px;padding:9px 12px}
-  nav .brand{font-size:13px;gap:7px}
-  nav .brand img{width:28px;height:28px}
-  nav .links{gap:0;margin-left:auto}
-  nav .links a:not(.soon-tab){display:none}
-  nav .links .soon-tab{font-size:11px;letter-spacing:.03em}
-  nav > a.btn.sm{padding:7px 12px;font-size:12px}
-}
-@media(max-width:400px){
-  nav .brand{font-size:0;gap:0}
-  nav .brand img{width:26px;height:26px}
-  nav .links .soon-tab{font-size:10px}
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; -webkit-font-smoothing:antialiased; }
+
+html { scroll-behavior: smooth; background: var(--bg); }
+
+body {
+  color: var(--txt);
+  font-family: var(--font);
+  overflow-x: hidden;
+  min-height: 100vh;
 }
 
-/* мобильная кнопка COMING SOON в герое — видна только на телефоне */
-.soon-mobile{display:none}
-@media(max-width:760px){
-  .soon-mobile{
-    display:inline-flex;align-items:center;justify-content:center;gap:10px;
-    margin-top:26px;padding:12px 22px;border-radius:14px;text-decoration:none;
-    font-family:Unbounded,sans-serif;font-weight:800;font-size:13px;letter-spacing:.10em;
-    color:var(--acc3);border:1px solid rgba(168,85,247,.35);
-    background:linear-gradient(135deg,rgba(168,85,247,.16),rgba(124,58,237,.06));
-    animation:soonpulse 2.4s ease-in-out infinite;
+h1,h2,h3 { font-family: var(--mono); }
+
+/* ── Top Scroll Progress Bar ── */
+#scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--cyan), var(--acc3), var(--acc2));
+  box-shadow: 0 0 14px var(--cyan), 0 0 24px var(--acc3);
+  z-index: 10000;
+  pointer-events: none;
+  transition: width 0.08s linear;
+}
+
+/* ── WebGL Canvas Background ── */
+#fluid-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(circle at 50% 45%, transparent 30%, rgba(4,2,10,.88) 90%);
+  pointer-events: none;
+}
+
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.025'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* Shard Burst Canvas */
+#shard-canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 800;
+}
+
+/* ── Custom Cursor ── */
+#cur-dot, #cur-ring {
+  position: fixed;
+  top: 0; left: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%,-50%);
+  z-index: 9999;
+  transition: width .28s var(--ease), height .28s var(--ease), background .28s;
+}
+#cur-dot {
+  width: 7px; height: 7px;
+  background: #fff;
+  box-shadow: 0 0 14px var(--cyan), 0 0 26px var(--acc);
+}
+#cur-ring {
+  width: 36px; height: 36px;
+  border: 1px solid rgba(168,85,247,.6);
+  background: radial-gradient(circle, rgba(168,85,247,.12) 0%, transparent 70%);
+  backdrop-filter: blur(1.5px);
+  will-change: transform;
+}
+#cur-ring.big {
+  width: 62px; height: 62px;
+  border-color: rgba(0,245,212,.75);
+  background: radial-gradient(circle, rgba(0,245,212,.15) 0%, transparent 70%);
+}
+
+.site { position: relative; z-index: 10; }
+
+/* ══════════════════════════════════════════
+   NAVIGATION
+   ══════════════════════════════════════════ */
+nav {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1140px,94vw);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 22px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-pill);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shadow);
+  transition: padding .3s, background .3s;
+}
+nav.scrolled {
+  padding: 8px 18px;
+  background: rgba(10,5,18,0.78);
+  border-color: rgba(255,255,255,0.18);
+}
+
+nav .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: .06em;
+  background: linear-gradient(135deg, #fff, var(--acc3));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-decoration: none;
+}
+nav .brand img {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: #fff;
+  padding: 2px;
+  object-fit: contain;
+  flex-shrink: 0;
+  box-shadow: 0 0 16px rgba(168,85,247,.45);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  position: relative;
+}
+nav a.nl {
+  padding: 8px 14px;
+  color: var(--mut);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--r-pill);
+  transition: color .25s, background .25s;
+  white-space: nowrap;
+}
+nav a.nl:hover { color: var(--txt); background: rgba(255,255,255,.05); }
+nav a.nl.soon-tab {
+  color: var(--cyan);
+  font-weight: 700;
+  letter-spacing: .06em;
+  background: rgba(0,245,212,.08);
+  border: 1px solid rgba(0,245,212,.25);
+  box-shadow: 0 0 14px rgba(0,245,212,.18);
+}
+nav a.nl.soon-tab:hover {
+  background: rgba(0,245,212,.16);
+  box-shadow: 0 0 22px rgba(0,245,212,.4);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Sound Toggle Button */
+.sound-btn {
+  background: rgba(255,255,255,.05);
+  border: 1px solid var(--glass-border);
+  color: var(--mut);
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: color .2s, border-color .2s, background .2s;
+  flex-shrink: 0;
+}
+.sound-btn:hover { color: var(--txt); border-color: var(--acc3); background: rgba(168,85,247,.12); }
+.sound-btn.active { color: var(--cyan); border-color: var(--cyan); box-shadow: 0 0 12px rgba(0,245,212,.3); }
+
+.nav-dl {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 20px;
+  border-radius: var(--r-pill);
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  background: linear-gradient(135deg, var(--acc2), var(--acc3));
+  box-shadow: 0 0 22px rgba(168,85,247,.45);
+  position: relative;
+  overflow: hidden;
+  transition: transform .25s var(--ease), box-shadow .25s;
+  flex-shrink: 0;
+}
+.nav-dl:hover { transform: translateY(-2px); box-shadow: 0 0 36px rgba(168,85,247,.7); }
+.nav-dl .sheen {
+  position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform .7s ease;
+}
+.nav-dl:hover .sheen { transform: translateX(100%); }
+
+@media(max-width:860px){
+  nav a.nl:not(.soon-tab) { display:none; }
+  nav { gap: 10px; padding: 8px 14px; }
+}
+
+/* ══════════════════════════════════════════
+   HERO WITH 3D GLASS CRYSTAL
+   ══════════════════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 130px 24px 70px;
+  position: relative;
+}
+
+/* 3D Logo Interactive Container */
+.logo-hero-box {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  margin: 0 auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#logo-3d {
+  width: 300px;
+  height: 300px;
+  cursor: grab;
+  filter: drop-shadow(0 0 45px rgba(168,85,247,.55)) drop-shadow(0 0 90px rgba(0,245,212,.3));
+  transition: transform 0.2s ease;
+}
+#logo-3d:active { cursor: grabbing; }
+
+.crystal-hint {
+  position: absolute;
+  bottom: 0;
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--mut);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1);
+  padding: 3px 12px;
+  border-radius: var(--r-pill);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+
+.hero h1 {
+  font-size: clamp(48px,9vw,94px);
+  font-weight: 700;
+  letter-spacing: -.03em;
+  line-height: 1.05;
+  background: linear-gradient(135deg, #fff 15%, var(--acc3) 50%, var(--acc2) 90%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 40px rgba(168,85,247,.25));
+  margin-bottom: 18px;
+}
+
+.hero-tag {
+  color: var(--mut);
+  font-size: clamp(15px,2vw,18px);
+  line-height: 1.65;
+  max-width: 600px;
+  margin: 0 auto 28px;
+}
+.hero-tag b { color: var(--txt); }
+
+.badges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+.badge {
+  padding: 7px 16px;
+  border-radius: var(--r-pill);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  font-family: var(--mono);
+}
+.badge.free  { background:linear-gradient(135deg,#15803d,#4ade80); color:#052e16; }
+.badge.new   { background:linear-gradient(135deg,var(--acc2),var(--acc3)); color:#fff; box-shadow:0 0 20px rgba(168,85,247,.45); }
+.badge.ntrl  { background:rgba(168,85,247,.10); border:1px solid var(--line); color:var(--acc3); }
+
+/* ── Interactive Dynamic Island Music Simulator ── */
+.dynamic-island {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 18px;
+  border-radius: var(--r-pill);
+  background: rgba(18,9,32,0.85);
+  border: 1px solid rgba(168,85,247,.35);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: 0 16px 40px rgba(0,0,0,.65), 0 0 26px rgba(168,85,247,.3),
+              inset 0 1px 0 rgba(255,255,255,.2);
+  margin-bottom: 34px;
+  max-width: 540px;
+  width: 100%;
+  position: relative;
+  transition: transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s;
+}
+.dynamic-island:hover {
+  transform: translateY(-2px);
+  border-color: var(--cyan);
+  box-shadow: 0 20px 50px rgba(0,0,0,.7), 0 0 32px rgba(0,245,212,.28);
+}
+.di-vinyl-wrap {
+  position: relative;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 14px rgba(0,245,212,.4);
+  flex-shrink: 0;
+  animation: vinylSpin 6s linear infinite;
+  animation-play-state: paused;
+  background: #111;
+  border: 1px solid rgba(255,255,255,.2);
+}
+.dynamic-island.playing .di-vinyl-wrap { animation-play-state: running; }
+.di-cover-img { width: 100%; height: 100%; object-fit: cover; }
+.di-icon-badge {
+  position: absolute; bottom: 0; right: 0;
+  font-size: 10px; background: rgba(0,0,0,0.7); border-radius: 50%; padding: 1px;
+}
+@keyframes vinylSpin { to { transform: rotate(360deg); } }
+
+.di-meta {
+  text-align: left;
+  flex: 1;
+  min-width: 0;
+}
+.di-title {
+  font-size: 13px; font-weight: 700;
+  color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-family: var(--mono);
+}
+.di-artist {
+  font-size: 11px; color: var(--cyan);
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 2px;
+}
+.di-eq {
+  display: flex; gap: 3px; align-items: flex-end; height: 14px;
+}
+.di-eq span {
+  width: 2.5px; height: 4px; background: var(--cyan);
+  border-radius: 1px;
+  transition: height .08s ease;
+}
+
+.di-controls {
+  display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+}
+.di-ctrl-btn {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: var(--mut);
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 11px;
+  transition: all 0.2s;
+}
+.di-ctrl-btn:hover { color: #fff; border-color: var(--cyan); background: rgba(0,245,212,0.15); transform: scale(1.1); }
+
+.di-play-btn {
+  background: linear-gradient(135deg, var(--acc2), var(--acc3));
+  border: none;
+  width: 34px; height: 34px; border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .2s, box-shadow .2s;
+  box-shadow: 0 0 14px rgba(168,85,247,.5);
+  flex-shrink: 0;
+}
+.di-play-btn:hover { transform: scale(1.12); box-shadow: 0 0 24px rgba(168,85,247,.8); }
+
+/* Volume Slider in Dynamic Island */
+.di-vol {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 8px;
+  border-left: 1px solid rgba(255,255,255,0.12);
+  flex-shrink: 0;
+}
+.di-vol-btn {
+  background: transparent;
+  border: none;
+  color: var(--mut);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;
+  border-radius: 50%;
+  transition: color 0.2s, background 0.2s;
+}
+.di-vol-btn:hover { color: var(--cyan); background: rgba(0,245,212,0.1); }
+.di-vol-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 64px;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--cyan) 75%, rgba(255,255,255,0.15) 75%);
+  outline: none;
+  cursor: pointer;
+  transition: background 0.1s, opacity 0.2s;
+}
+.di-vol-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.di-vol-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+  box-shadow: 0 0 14px var(--cyan);
+}
+.di-vol-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--cyan);
+  box-shadow: 0 0 8px var(--cyan);
+  cursor: pointer;
+}
+.di-vol-val {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--mut);
+  min-width: 25px;
+  text-align: right;
+  letter-spacing: 0.02em;
+}
+
+@media(max-width:600px){
+  .dynamic-island {
+    flex-wrap: wrap;
+    padding: 10px 14px;
+    gap: 10px;
+    max-width: 95vw;
   }
-  .soon-mobile span{font-family:Manrope,sans-serif;font-weight:600;font-size:11px;letter-spacing:.05em;color:var(--mut)}
+  .di-vol {
+    width: 100%;
+    justify-content: center;
+    border-left: none;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 6px;
+    padding-left: 0;
+  }
+  .di-vol-slider {
+    width: 130px;
+  }
 }
-@keyframes soonpulse{0%,100%{box-shadow:0 0 0 rgba(168,85,247,0)}50%{box-shadow:0 0 26px rgba(168,85,247,.35)}}
 
-.btn{display:inline-block;padding:14px 32px;border-radius:14px;font-weight:700;font-size:15px;text-decoration:none;transition:.25s;cursor:pointer;border:none}
-.btn.primary{background:linear-gradient(135deg,var(--acc2),var(--acc3));color:#fff;box-shadow:0 0 28px rgba(168,85,247,.45)}
-.btn.primary:hover{transform:translateY(-2px);box-shadow:0 0 44px rgba(168,85,247,.7)}
-.btn.ghost{background:rgba(168,85,247,.08);border:1px solid var(--line);color:var(--txt)}
-.btn.ghost:hover{border-color:var(--acc);color:var(--acc3)}
-.btn.sm{padding:9px 20px;font-size:13px}
-
-section{width:min(1100px,92vw);margin:0 auto;padding:70px 0}
-h2{font-size:clamp(24px,4vw,38px);font-weight:800;margin-bottom:14px}
-h2 span{color:var(--acc3)}
-.sub{color:var(--mut);margin-bottom:36px;max-width:640px}
-
-.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding-top:110px;position:relative}
-.logo-wrap{width:min(300px,60vw);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 50% 35%,#ffffff,#e6e9f2 78%);display:flex;align-items:center;justify-content:center;box-shadow:0 0 80px rgba(168,85,247,.5),0 0 200px rgba(124,58,237,.25);animation:float 6s ease-in-out infinite}
-.logo-wrap img{width:82%;height:82%;object-fit:contain}
-@keyframes float{50%{transform:translateY(-14px)}}
-.hero h1{font-size:clamp(40px,8vw,84px);font-weight:800;margin-top:28px;background:linear-gradient(135deg,#fff,var(--acc3) 60%,var(--acc2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.hero .tag{color:var(--mut);font-size:clamp(15px,2vw,18px);max-width:560px;margin:16px auto 26px}
-.hero .tag b{color:var(--txt)}
-.badges{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:34px}
-.badge{padding:8px 18px;border-radius:999px;font-size:13px;font-weight:700;letter-spacing:.5px}
-.badge.free{background:linear-gradient(135deg,#16a34a,#4ade80);color:#052e16}
-.badge.neutral{background:rgba(168,85,247,.10);border:1px solid var(--line);color:var(--acc3)}
-.badge.new{background:linear-gradient(135deg,var(--acc2),var(--acc3));color:#fff;box-shadow:0 0 22px rgba(168,85,247,.45)}
-/* плашка NEW на карточках */
-.card .new-tag{position:absolute;top:16px;right:16px;font-size:10px;font-weight:800;letter-spacing:.12em;padding:4px 9px;border-radius:999px;background:linear-gradient(135deg,var(--acc2),var(--acc3));color:#fff;box-shadow:0 0 16px rgba(168,85,247,.5)}
-.cta{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
-.sp{position:absolute;color:#fff;font-size:20px;animation:spark 2.6s ease-in-out infinite}
-.sp:nth-child(1){top:22%;left:24%}.sp:nth-child(2){top:30%;right:22%;animation-delay:.8s}.sp:nth-child(3){bottom:26%;left:30%;animation-delay:1.5s}
-@keyframes spark{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1.1)}}
-
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;overflow:hidden;padding:0}
-.stat{padding:26px;text-align:center;background:rgba(168,85,247,.05)}
-.stat .v{font-family:Unbounded;font-weight:800;font-size:22px;color:var(--acc3)}
-.stat .k{color:var(--mut);font-size:13px;margin-top:6px;text-transform:uppercase;letter-spacing:1px}
-
-/* карточки + sheen-блик при ховере (дёшево, красиво) */
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
-.card{padding:28px;transition:transform .3s var(--ease),box-shadow .3s var(--ease);border-radius:var(--r-card);position:relative;overflow:hidden}
-.card::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.09) 50%,transparent 58%);transform:translateX(-130%);transition:transform .7s var(--ease);pointer-events:none}
-.card:hover{transform:translateY(-6px);box-shadow:0 14px 44px rgba(124,58,237,.30),inset 0 1px 0 rgba(255,255,255,.14)}
-.card:hover::after{transform:translateX(130%)}
-.card .icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--acc2),var(--acc3));margin-bottom:18px;box-shadow:0 0 20px rgba(168,85,247,.4)}
-.card .icon svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.card h3{font-size:17px;margin-bottom:10px}
-.card p{color:var(--mut);font-size:14px;line-height:1.6}
-
-/* ===== окно клиента ===== */
-.cwin{border-radius:var(--r-win);border:1px solid transparent;background:linear-gradient(160deg,rgba(18,9,32,.94),rgba(10,5,18,.90)) padding-box,linear-gradient(135deg,rgba(255,255,255,.26),rgba(168,85,247,.34) 30%,rgba(255,255,255,.05) 55%,rgba(168,85,247,.26)) border-box;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08)}
-.cwin-bar{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--line);font-size:12px;color:var(--mut);background:rgba(168,85,247,.05)}
-.cwin-bar .dot{width:8px;height:8px;border-radius:50%;background:var(--online);box-shadow:0 0 10px var(--online)}
-.cwin-bar b{color:var(--txt);font-weight:700}
-.cwin-bar .right{margin-left:auto}
-.cwin-body{display:flex;min-height:460px}
-.cwin-side{width:138px;flex-shrink:0;border-right:1px solid var(--line);padding:7px;display:flex;flex-direction:column;gap:7px;background:rgba(255,255,255,.02)}
-.cat-row{border:1px solid transparent;background:transparent;color:var(--mut);padding:10px;border-radius:var(--r-row);text-align:left;font-family:Manrope;font-weight:600;font-size:13px;cursor:pointer;transition:background .2s var(--ease),color .2s var(--ease);display:flex;justify-content:space-between;align-items:center;gap:6px}
-.cat-row .cnt{font-size:11px;opacity:.65}
-.cat-row:hover{background:rgba(168,85,247,.08);color:var(--txt)}
-.cat-row.active{background:linear-gradient(135deg,rgba(124,58,237,.4),rgba(168,85,247,.14));border-color:var(--line);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
-.cwin-main{flex:1;padding:14px;display:flex;flex-direction:column;gap:12px;min-width:0}
-.cwin-search input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:var(--r-row);padding:10px 14px;color:var(--txt);font-family:Manrope;font-size:14px;outline:none;transition:border-color .2s}
-.cwin-search input:focus{border-color:var(--acc)}
-.cwin-search input::placeholder{color:var(--mut)}
-.mod-head{display:flex;align-items:baseline;gap:10px;font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:1px}
-.mod-head b{font-family:Unbounded;color:var(--acc3);font-size:13px;letter-spacing:1px}
-#modGrid{display:flex;flex-wrap:wrap;gap:7px;align-content:flex-start;transition:opacity .28s var(--ease),transform .28s var(--ease)}
-#modGrid.swap{opacity:0;transform:translateY(8px);transition-duration:.2s}
-.pill{border-radius:var(--r-pill);padding:7px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(168,85,247,.18);font-size:13px;color:#cfc6e4;transition:.2s var(--ease);cursor:default}
-.pill:hover{border-color:var(--acc);color:#fff;box-shadow:0 0 14px rgba(168,85,247,.35);transform:translateY(-1px)}
-.pill .tc{font-size:10px;color:var(--acc3);margin-left:7px;text-transform:uppercase;letter-spacing:.5px}
-.pill.isnew{border-color:var(--acc);color:#fff;box-shadow:0 0 14px rgba(168,85,247,.28)}
-.pill.isnew::after{content:'NEW';font-size:9px;font-weight:800;letter-spacing:.08em;margin-left:7px;color:var(--acc3)}
-@media(max-width:760px){.cwin-body{flex-direction:column}.cwin-side{width:100%;flex-direction:row;overflow-x:auto;border-right:none;border-bottom:1px solid var(--line)}.cat-row{white-space:nowrap}}
-
-.shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
-.shot{aspect-ratio:16/9;border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);position:relative;background:linear-gradient(135deg,#1a0b2e,#0d0618)}
-.shot img{width:100%;height:100%;object-fit:cover;transition:.4s}
-.shot:hover img{transform:scale(1.05)}
-.shot .cap{position:absolute;left:0;right:0;bottom:0;padding:26px 16px 12px;background:linear-gradient(transparent,rgba(5,2,10,.88));font-size:13px;font-weight:600}
-.shot.empty::after{content:'скрин скоро будет';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:14px;letter-spacing:1px}
-.shot.empty .cap{display:none}
-
-#revFeed{display:flex;flex-direction:column;max-width:720px;margin:0 auto}
-.rev{overflow:hidden;max-height:0;opacity:0;transform:translateY(-10px);margin-top:14px;padding:0 24px;transition:max-height .5s ease,opacity .5s,transform .5s,margin .5s,padding .5s}
-.rev:first-child{margin-top:0}
-.rev.in{opacity:1;transform:none;padding:22px 24px}
-.rev.out{opacity:0;padding-top:0;padding-bottom:0}
-.rev .head{display:flex;align-items:center;gap:12px;margin-bottom:10px}
-.rev .ava{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:16px;flex-shrink:0}
-.rev .name{font-weight:700;font-size:14px}
-.rev .srv{font-size:12px;color:var(--acc3);background:rgba(168,85,247,.12);border:1px solid var(--line);padding:2px 10px;border-radius:999px;margin-left:8px}
-.rev .stars{margin-left:auto;color:#facc15;font-size:13px;letter-spacing:2px}
-.rev .text{color:var(--mut);font-size:14px;line-height:1.6}
-
-.faq{max-width:760px;margin:0 auto}
-.faq-item{margin-bottom:12px;overflow:hidden}
-.faq-q{width:100%;display:flex;justify-content:space-between;align-items:center;padding:20px 24px;background:none;border:none;color:var(--txt);font-family:Manrope;font-weight:700;font-size:15px;cursor:pointer;text-align:left}
-.faq-q span{color:var(--acc3);font-size:22px;transition:.3s}
-.faq-item.open .faq-q span{transform:rotate(45deg)}
-.faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease}
-.faq-a p{padding:0 24px 20px;color:var(--mut);font-size:14px;line-height:1.7}
-.faq-a b{color:var(--txt)}
-
-.final{text-align:center;padding:60px 30px}
-.final h2{margin-bottom:12px}
-.final p{color:var(--mut);margin-bottom:30px}
-.final p b{color:var(--txt)}
-.final .note{font-size:12px;color:var(--mut);margin-top:16px}
-
-footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:var(--mut);font-size:13px}
-footer a{color:var(--acc3);text-decoration:none}
-
-.reveal{opacity:0;transform:translateY(26px);transition:.7s ease}
-.reveal.vis{opacity:1;transform:none}
-
-/* слабые машины / кто просил без анимаций — отключаем всю движуху */
-@media(prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation:none!important;transition:none!important}
-  .reveal{opacity:1;transform:none}
+/* Floating 3D Air Lyrics Container */
+#lyrics-stage {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 5;
 }
+.lyric-item {
+  position: absolute;
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: clamp(14px, 2.2vw, 22px);
+  color: #ffffff;
+  text-shadow: 0 0 14px var(--cyan), 0 0 28px var(--acc3), 0 2px 8px rgba(0,0,0,0.85);
+  background: rgba(18, 9, 32, 0.55);
+  border: 1px solid rgba(0, 245, 212, 0.35);
+  padding: 6px 16px;
+  border-radius: var(--r-pill);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 22px rgba(0,245,212,0.22);
+  opacity: 0;
+  transform: translateY(20px) scale(0.9);
+  animation: floatAirLyric 3.8s cubic-bezier(0.16,1,0.3,1) forwards;
+  pointer-events: none;
+  white-space: nowrap;
+}
+@keyframes floatAirLyric {
+  0% { opacity: 0; transform: translateY(30px) scale(0.8); filter: blur(4px); }
+  20% { opacity: 1; transform: translateY(0px) scale(1.03); filter: blur(0); }
+  75% { opacity: 0.95; transform: translateY(-35px) scale(1); filter: blur(0); }
+  100% { opacity: 0; transform: translateY(-75px) scale(1.1); filter: blur(6px); }
+}
+
+.cta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-primary, .btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 15px 36px;
+  border-radius: var(--r-md);
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--acc2), var(--acc3));
+  color: #fff;
+  box-shadow: 0 0 30px rgba(168,85,247,.5);
+}
+.btn-primary:hover { transform:translateY(-3px); box-shadow:0 0 50px rgba(168,85,247,.75); }
+.btn-ghost {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border2);
+  color: var(--txt);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shadow);
+}
+.btn-ghost:hover { background:var(--glass-hover); border-color:rgba(255,255,255,.38); }
+
+.btn-sheen {
+  position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 28%, rgba(255,255,255,.38) 50%, transparent 72%);
+  transform: translateX(-100%);
+  transition: transform .65s ease;
+  pointer-events: none;
+}
+.btn-primary:hover .btn-sheen,
+.btn-ghost:hover   .btn-sheen { transform: translateX(100%); }
+
+/* ══════════════════════════════════════════
+   STATS BAR WITH 3D HOVER TILT
+   ══════════════════════════════════════════ */
+.stats-bar {
+  width: min(1140px,92vw);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 1px;
+  background: var(--glass-border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--glass-blur);
+}
+.stat-cell {
+  padding: 28px 20px;
+  text-align: center;
+  background: var(--glass-bg);
+  transition: background .3s, transform .3s;
+}
+.stat-cell:hover { background: var(--glass-hover); }
+.stat-val {
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #fff, var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.stat-lbl {
+  color: var(--mut);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+@media(max-width:640px){.stats-bar{grid-template-columns:repeat(2,1fr)}}
+
+/* ══════════════════════════════════════════
+   SECTIONS & 3D TILT CARDS
+   ══════════════════════════════════════════ */
+section {
+  width: min(1140px,92vw);
+  margin: 0 auto;
+  padding: 90px 0;
+  perspective: 1200px;
+}
+
+h2 {
+  font-size: clamp(26px,4vw,42px);
+  font-weight: 700;
+  letter-spacing: -.02em;
+  margin-bottom: 14px;
+}
+h2 span { background:linear-gradient(135deg,var(--acc3),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent; }
+
+.sub { color:var(--mut); font-size:15px; line-height:1.65; margin-bottom:40px; max-width:640px; }
+
+.sec-pill {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .15em;
+  color: var(--cyan);
+  padding: 4px 14px;
+  background: rgba(0,245,212,.08);
+  border: 1px solid rgba(0,245,212,.22);
+  border-radius: var(--r-pill);
+  margin-bottom: 14px;
+}
+
+/* 3D Interactive Card Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
+  gap: 22px;
+}
+
+.card {
+  padding: 30px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-lg);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shadow);
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transition: transform 0.35s var(--ease), border-color 0.35s, box-shadow 0.35s;
+  cursor: default;
+}
+.card::before {
+  content: '';
+  position: absolute; top:0; left:0; right:0; height:120px;
+  background: linear-gradient(180deg, rgba(255,255,255,.09) 0%, transparent 100%);
+  pointer-events: none;
+}
+/* Holographic specular beam */
+.card .card-glare {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255,255,255,0.18) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity .3s;
+  pointer-events: none;
+}
+.card:hover .card-glare { opacity: 1; }
+
+.card:hover {
+  border-color: rgba(255,255,255,.3);
+  box-shadow: 0 24px 60px rgba(0,0,0,.75), 0 0 35px rgba(168,85,247,.22),
+              inset 0 1px 0 rgba(255,255,255,.4);
+}
+
+.card .new-tag {
+  position: absolute; top:18px; right:18px;
+  font-size: 10px; font-weight:800; letter-spacing:.12em;
+  padding: 4px 10px; border-radius: var(--r-pill);
+  background: linear-gradient(135deg,var(--acc2),var(--acc3));
+  color: #fff;
+  box-shadow: 0 0 14px rgba(168,85,247,.55);
+  font-family: var(--mono);
+}
+
+.card .icon {
+  width:48px; height:48px;
+  border-radius: var(--r-sm);
+  display:flex; align-items:center; justify-content:center;
+  background: linear-gradient(135deg, var(--acc2), var(--acc3));
+  margin-bottom: 20px;
+  box-shadow: 0 0 20px rgba(168,85,247,.4);
+  position: relative; z-index:1;
+}
+.card .icon svg { width:24px;height:24px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round; }
+.card h3 { font-size:17px;margin-bottom:10px;position:relative;z-index:1; }
+.card p  { color:var(--mut);font-size:14px;line-height:1.65;position:relative;z-index:1; }
+
+/* ══════════════════════════════════════════
+   CLIENT WINDOW (MODULES)
+   ══════════════════════════════════════════ */
+.cwin {
+  border-radius: var(--r-lg);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border2);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shadow);
+  overflow: hidden;
+}
+.cwin-bar {
+  display:flex; align-items:center; gap:10px;
+  padding:14px 20px;
+  border-bottom:1px solid var(--line);
+  font-size:12px; color:var(--mut);
+  background: rgba(168,85,247,.05);
+  font-family: var(--mono);
+}
+.dot { width:8px;height:8px;border-radius:50%;background:var(--online);box-shadow:0 0 10px var(--online); }
+.cwin-bar b { color:var(--txt); }
+.cwin-bar .right { margin-left:auto; }
+.cwin-body { display:flex;min-height:480px; }
+.cwin-side {
+  width:146px; flex-shrink:0;
+  border-right:1px solid var(--line);
+  padding:8px; display:flex; flex-direction:column; gap:6px;
+  background:rgba(255,255,255,.015);
+}
+.cat-row {
+  border:1px solid transparent; background:transparent;
+  color:var(--mut); padding:10px 12px;
+  border-radius:8px; text-align:left;
+  font-family:var(--font); font-weight:600; font-size:13px;
+  cursor:pointer; transition:background .2s,color .2s;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.cat-row .cnt { font-size:11px;opacity:.6; }
+.cat-row:hover { background:rgba(168,85,247,.08);color:var(--txt); }
+.cat-row.active {
+  background:linear-gradient(135deg,rgba(124,58,237,.38),rgba(168,85,247,.12));
+  border-color:var(--line); color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+}
+.cwin-main { flex:1;padding:16px;display:flex;flex-direction:column;gap:14px;min-width:0; }
+.cwin-search input {
+  width:100%;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:11px 16px;
+  color:var(--txt);
+  font-family:var(--font);
+  font-size:14px;
+  outline:none;
+  transition:border-color .2s, box-shadow .2s;
+}
+.cwin-search input:focus { border-color:var(--cyan); box-shadow: 0 0 16px rgba(0,245,212,.2); }
+.cwin-search input::placeholder { color:var(--mut); }
+.mod-head { display:flex;align-items:baseline;gap:10px;font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:1px;font-family:var(--mono); }
+.mod-head b { color:var(--cyan);font-size:13px; }
+#modGrid { display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;transition:opacity .28s,transform .28s; }
+#modGrid.swap { opacity:0;transform:translateY(8px);transition-duration:.2s; }
+.pill {
+  border-radius:6px; padding:7px 12px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(168,85,247,.22);
+  font-size:13px;color:#cfc6e4;
+  transition:.2s; cursor:default;
+}
+.pill:hover { border-color:var(--cyan);color:#fff;box-shadow:0 0 14px rgba(0,245,212,.35);transform:translateY(-2px); }
+.pill .tc { font-size:10px;color:var(--acc3);margin-left:7px;text-transform:uppercase;letter-spacing:.5px; }
+.pill.isnew { border-color:var(--acc);color:#fff;box-shadow:0 0 12px rgba(168,85,247,.3); }
+.pill.isnew::after { content:'NEW';font-size:9px;font-weight:800;letter-spacing:.08em;margin-left:6px;color:var(--cyan); }
+@media(max-width:720px){
+  .cwin-body{flex-direction:column}
+  .cwin-side{width:100%;flex-direction:row;overflow-x:auto;border-right:none;border-bottom:1px solid var(--line)}
+  .cat-row{white-space:nowrap}
+}
+
+/* ══════════════════════════════════════════
+   INTERACTIVE 3D SCREENSHOTS CAROUSEL
+   ══════════════════════════════════════════ */
+.slider-container {
+  position: relative;
+  overflow: hidden;
+  padding: 20px 0;
+  margin: 0 auto;
+}
+.shots-track {
+  display: flex;
+  gap: 22px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 14px;
+  -webkit-overflow-scrolling: touch;
+}
+.shots-track::-webkit-scrollbar {
+  height: 6px;
+}
+.shots-track::-webkit-scrollbar-track {
+  background: rgba(255,255,255,.03);
+  border-radius: 999px;
+}
+.shots-track::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, var(--acc2), var(--cyan));
+  border-radius: 999px;
+}
+
+.shot-card {
+  flex: 0 0 clamp(290px, 45vw, 520px);
+  scroll-snap-align: center;
+  aspect-ratio: 16/9;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid var(--glass-border2);
+  position: relative;
+  background: rgba(255,255,255,.02);
+  box-shadow: var(--glass-shadow);
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform .45s var(--ease), border-color .3s, box-shadow .3s;
+}
+.shot-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: var(--cyan);
+  box-shadow: 0 24px 60px rgba(0,0,0,.8), 0 0 35px rgba(0,245,212,.25);
+}
+.shot-card img { width:100%;height:100%;object-fit:cover;transition:.45s; }
+.shot-card:hover img { transform:scale(1.06); }
+.shot-card .cap {
+  position:absolute;left:0;right:0;bottom:0;
+  padding:32px 18px 14px;
+  background:linear-gradient(transparent,rgba(4,2,10,.94));
+  font-size:13px;font-weight:600;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.shot-card .zoom-hint {
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--cyan);
+  background: rgba(0,245,212,.12);
+  border: 1px solid rgba(0,245,212,.25);
+  padding: 3px 8px; border-radius: 999px;
+}
+
+/* Lightbox Modal */
+#lightbox {
+  position: fixed; inset: 0;
+  background: rgba(4,2,10,.88);
+  backdrop-filter: blur(28px);
+  z-index: 10001;
+  display: none;
+  align-items: center; justify-content: center;
+  padding: 30px;
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+#lightbox.active { display: flex; opacity: 1; }
+#lightbox-img {
+  max-width: 90vw; max-height: 80vh;
+  border-radius: var(--r-lg);
+  border: 1px solid rgba(255,255,255,.2);
+  box-shadow: 0 30px 90px rgba(0,0,0,.9), 0 0 50px rgba(168,85,247,.3);
+  object-fit: contain;
+}
+#lightbox-close {
+  position: absolute; top: 24px; right: 24px;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.2);
+  color: #fff; font-size: 24px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background .2s, transform .2s;
+}
+#lightbox-close:hover { background: rgba(255,255,255,.25); transform: scale(1.1); }
+
+/* ══════════════════════════════════════════
+   REVIEWS (LIVE FEED)
+   ══════════════════════════════════════════ */
+#revFeed { display:flex;flex-direction:column;max-width:760px;margin:0 auto; }
+.rev {
+  overflow:hidden;max-height:0;opacity:0;
+  transform:translateY(-10px);margin-top:14px;padding:0 24px;
+  transition:max-height .5s ease,opacity .5s,transform .5s,margin .5s,padding .5s;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-md);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shadow);
+}
+.rev:first-child { margin-top:0; }
+.rev.in { opacity:1;transform:none;padding:22px 24px; }
+.rev.out { opacity:0;padding-top:0;padding-bottom:0; }
+.rev .head { display:flex;align-items:center;gap:12px;margin-bottom:10px; }
+.rev .ava { width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:16px;flex-shrink:0;box-shadow:0 0 12px rgba(168,85,247,.4); }
+.rev .name { font-weight:700;font-size:14px; }
+.rev .srv { font-size:12px;color:var(--cyan);background:rgba(0,245,212,.1);border:1px solid rgba(0,245,212,.2);padding:2px 10px;border-radius:var(--r-pill);margin-left:8px;font-family:var(--mono); }
+.rev .stars { margin-left:auto;color:#facc15;font-size:13px;letter-spacing:2px; }
+.rev .text { color:var(--mut);font-size:14px;line-height:1.65; }
+
+/* ══════════════════════════════════════════
+   FAQ
+   ══════════════════════════════════════════ */
+.faq { max-width:780px;margin:0 auto; }
+.faq-item {
+  margin-bottom: 14px;
+  overflow: hidden;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-md);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shadow);
+  transition: border-color .3s, transform .2s;
+}
+.faq-item:hover { border-color: rgba(168,85,247,.4); transform: translateY(-1px); }
+.faq-q {
+  width:100%;display:flex;justify-content:space-between;align-items:center;
+  padding:20px 24px;background:none;border:none;
+  color:var(--txt);font-family:var(--font);font-weight:700;font-size:15px;
+  cursor:pointer;text-align:left;
+}
+.faq-q .fq-icon { color:var(--cyan);font-size:22px;transition:transform .3s; }
+.faq-item.open .fq-icon { transform:rotate(45deg); color:var(--acc3); }
+.faq-a { max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(0.16,1,0.3,1); }
+.faq-a p { padding:0 24px 22px;color:var(--mut);font-size:14px;line-height:1.7; }
+.faq-a b { color:var(--txt); }
+
+/* ══════════════════════════════════════════
+   DOWNLOAD CTA
+   ══════════════════════════════════════════ */
+.final-wrap {
+  text-align: center;
+  padding: 70px 40px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border2);
+  border-radius: var(--r-lg);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shadow);
+  position: relative;
+  overflow: hidden;
+}
+.final-wrap::before {
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--cyan),var(--acc3),transparent);
+}
+.final-wrap h2 { margin-bottom:14px; }
+.final-wrap p { color:var(--mut);margin-bottom:34px;max-width:540px;margin-left:auto;margin-right:auto; }
+.final-wrap .note { font-size:12px;color:var(--mut);margin-top:20px; }
+.final-wrap .note b { color:var(--txt); }
+
+/* ══════════════════════════════════════════
+   LIVE HUD TELEMETRY WIDGET (MINECRAFT STYLE)
+   ══════════════════════════════════════════ */
+#hud-overlay {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: var(--r-sm);
+  background: rgba(4,2,10,0.72);
+  border: 1px solid rgba(168,85,247,0.3);
+  backdrop-filter: blur(16px);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--mut);
+  pointer-events: none;
+  box-shadow: 0 10px 24px rgba(0,0,0,.6);
+  user-select: none;
+}
+#hud-overlay .hud-row { display: flex; gap: 8px; justify-content: space-between; }
+#hud-overlay .hud-v { color: var(--cyan); font-weight: 700; }
+
+/* ── Footer ── */
+footer {
+  border-top:1px solid var(--glass-border);
+  padding:34px 0;
+  text-align:center;
+  color:var(--mut);
+  font-size:13px;
+  backdrop-filter: blur(12px);
+  background: rgba(255,255,255,.015);
+}
+footer a { color:var(--acc3);text-decoration:none;transition:color .2s; }
+footer a:hover { color:#fff; }
+
+/* ── Scroll Reveal ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px) rotateX(8deg);
+  transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
+}
+.reveal.vis {
+  opacity: 1;
+  transform: translateY(0) rotateX(0deg);
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
 </style>
 </head>
+
 <body>
-<div class="bg"><div class="orb o1"></div><div class="orb o2"></div></div>
 
-<nav class="glass">
-  <div class="brand"><img src="assets/logo.png" alt=""> StarDLC</div>
-  <div class="links">
-    <a href="#whatsnew">Новое</a><a href="#features">Фичи</a><a href="#modules">Модули</a><a href="#screens">Скрины</a><a href="#reviews">Отзывы</a><a href="#faq">FAQ</a><a href="coming-soon.html" class="soon-tab">COMING SOON</a>
-  </div>
-  <a href="#download" class="btn primary sm">Скачать</a>
-</nav>
+<!-- Top Scroll Progress Line -->
+<div id="scroll-progress"></div>
 
-<header class="hero">
-  <span class="sp">✦</span><span class="sp">✦</span><span class="sp">✦</span>
-  <div class="logo-wrap"><img src="assets/logo.png" alt="StarDLC logo"></div>
-  <h1>StarDLC</h1>
-  <p class="tag">Бесплатный чит-клиент для Minecraft <b>1.21.4</b>. <b>116 модулей</b>, текст песни прямо в воздухе, плеер в динамическом острове, нейро-аура и liquid glass GUI.</p>
-  <div class="badges">
-    <span class="badge free">FREE</span>
-    <span class="badge new">BUILD 2.2</span>
-    <span class="badge neutral">116 МОДУЛЕЙ</span>
-    <span class="badge neutral">MC 1.21.4</span>
-  </div>
-  <div class="cta">
-    <a href="#download" class="btn primary">Скачать клиент</a>
-    <a href="#modules" class="btn ghost">Смотреть модули</a>
-  </div>
-  <a href="coming-soon.html" class="soon-mobile">COMING SOON<span>2.5 → 3.0</span></a>
-</header>
+<!-- WebGL Fluid Background -->
+<canvas id="fluid-canvas"></canvas>
+<div class="vignette"></div>
+<div class="grain"></div>
 
-<div class="stats glass reveal">
-  <div class="stat"><div class="v">2.2</div><div class="k">билд</div></div>
-  <div class="stat"><div class="v">1.21.4</div><div class="k">версия MC</div></div>
-  <div class="stat"><div class="v">116</div><div class="k">модулей</div></div>
-  <div class="stat"><div class="v">0 ₽</div><div class="k">цена навсегда</div></div>
+<!-- Shard particle canvas for clicks -->
+<canvas id="shard-canvas"></canvas>
+
+<!-- Custom cursor -->
+<div id="cur-dot"></div>
+<div id="cur-ring"></div>
+
+<!-- Minecraft Client In-Game HUD Widget -->
+<div id="hud-overlay">
+  <div class="hud-row"><span>FPS</span><span class="hud-v" id="hud-fps">144</span></div>
+  <div class="hud-row"><span>BPS</span><span class="hud-v" id="hud-bps">8.42</span></div>
+  <div class="hud-row"><span>PING</span><span class="hud-v" id="hud-ping">12 ms</span></div>
+  <div class="hud-row"><span>CLIENT</span><span class="hud-v" style="color:var(--acc3)">StarDLC 2.2</span></div>
 </div>
 
-<section id="whatsnew">
-  <h2>Что нового в <span>2.2</span></h2>
-  <p class="sub">Главное в этом обновлении: музыка стала частью интерфейса, а слова любимых треков теперь летают вокруг тебя.</p>
-  <div class="grid">
-    <div class="card glass reveal"><span class="new-tag">NEW</span><div class="icon"><svg viewBox="0 0 24 24"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg></div><h3>Музыка в «острове»</h3><p>Плеер переехал прямо в динамический остров: обложка, название и исполнитель, play / pause, предыдущий и следующий трек. Автоопределение Яндекс Музыки и Spotify — остров показывает иконку источника.</p></div>
-    <div class="card glass reveal"><span class="new-tag">NEW</span><div class="icon"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/><circle cx="19" cy="18" r="2"/></svg></div><h3>Lyrics — текст песни в воздухе</h3><p>Слова песни собираются из букв вокруг тебя, живут несколько секунд и разлетаются. Есть режим караоке в такт музыке, цвет можно взять из обложки альбома. Кириллица поддерживается полностью.</p></div>
-    <div class="card glass reveal"><div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 8l7-5 7 5"/><path d="M5 16l7 5 7-5"/></svg></div><h3>Симметричная анимация</h3><p>Буквы слетаются при появлении и точно так же разлетаются при исчезновении — левые символы ведут за собой остальные. Длинные строки переносятся и не вылезают за экран.</p></div>
-    <div class="card glass reveal"><div class="icon"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div><h3>13 шрифтов</h3><p>Обычный, средний, полужирный, жирный, тонкий, округлый, Minecraft, массивный, узкий, геометрический, антиква, рукописный и дисплейный — под настроение и под сборку.</p></div>
-  </div>
-</section>
+<!-- Lightbox Modal for Screenshots -->
+<div id="lightbox">
+  <button id="lightbox-close">&times;</button>
+  <img id="lightbox-img" src="" alt="Enlarged screenshot">
+</div>
 
-<section id="features">
-  <h2>Топовые <span>модули</span></h2>
-  <p class="sub">То, за что StarDLC любят с первой установки. Полное меню из 116 модулей — ниже.</p>
-  <div class="grid">
-    <div class="card glass reveal"><div class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div><h3>Aura (нейро)</h3><p>Умная аура с выбором таргета и просчётом ударов. Бьёт плавно, выглядит чисто. Туториал по нейро-ауре — внутри архива с клиентом.</p></div>
-    <div class="card glass reveal"><div class="icon"><svg viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div><h3>GUI: Liquid Glass</h3><p>Меню — чистый liquid glass: полупрозрачные слои, световые блики, преломления и плавные анимации 280ms. Открывается на RCTRL, выглядит дороже платных клиентов.</p></div>
-    <div class="card glass reveal"><div class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></div><h3>Interface & HUD</h3><p>Пиллы FPS/BPS, TPS и координат, бинды предметов, элементы liquid glass по всему HUD. Кастомизация до пикселя: Fov, NoBob, CustomFog, Ambience.</p></div>
-    <div class="card glass reveal"><div class="icon"><svg viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1z"/><circle cx="12" cy="12" r="3"/></svg></div><h3>ESP-пакет</h3><p>TargetEsp, StorageEsp, SoundEsp и Tracers: видишь и слышишь всё в радиусе чанков, даже сквозь стены и руду.</p></div>
-    <div class="card glass reveal"><div class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/><rect x="8" y="3" width="8" height="8"/></svg></div><h3>Scaffold</h3><p>Мосты со скоростью света: блоки ставятся сами, ровно в линию, даже на спринте и в прыжке.</p></div>
-    <div class="card glass reveal"><div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.9 2.6L22.5 18l-2.6.9L19 21.5l-.9-2.6L15.5 18l2.6-.9z"/></svg></div><h3>Ambience</h3><p>Кастомное фиолетовое небо, дождь и частицы — как на скринах. Клиент выглядит дорого даже с выключенными чит-функциями.</p></div>
-    <div class="card glass reveal"><div class="icon"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></div><h3>Стабильные 120+ FPS</h3><p>Рендер текста и эффектов переписан на нулевые аллокации в кадре — клиент не теряет кадры даже с включённым Lyrics.</p></div>
-    <div class="card glass reveal"><div class="icon"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M8 10h8M8 14h5"/></svg></div><h3>Динамический остров</h3><p>Живой виджет сверху: статусы, уведомления и теперь музыка — всё в одном месте, не отвлекая от игры.</p></div>
-  </div>
-</section>
+<div class="site">
 
-<section id="modules">
-  <h2>Все <span>116 модулей</span></h2>
-  <p class="sub">Окно клиента прямо на сайте: выбирай категорию или ищи модуль поиском. Список актуален для билда 2.2.</p>
-  <div class="cwin reveal">
-    <div class="cwin-bar"><span class="dot"></span><b>StarDLC</b> · build 2.2 · online<span class="right">MC 1.21.4 · 116 мод.</span></div>
-    <div class="cwin-body">
-      <aside class="cwin-side" id="catSide"></aside>
-      <div class="cwin-main">
-        <div class="cwin-search"><input id="modSearch" type="text" placeholder="Поиск модуля…"></div>
-        <div class="mod-head"><b id="modCatName">COMBAT</b><span id="modCount"></span></div>
-        <div id="modGrid"></div>
+  <!-- ── NAVIGATION ── -->
+  <nav id="navbar">
+    <a href="#" class="brand">
+      <img src="assets/logo.png" alt="StarDLC logo">
+      StarDLC
+    </a>
+    <div class="nav-links">
+      <a href="#whatsnew" class="nl">Новое</a>
+      <a href="#features" class="nl">Фичи</a>
+      <a href="#modules" class="nl">Модули</a>
+      <a href="#screens" class="nl">Скрины</a>
+      <a href="#reviews" class="nl">Отзывы</a>
+      <a href="#faq" class="nl">FAQ</a>
+      <a href="coming-soon.html" class="nl soon-tab">COMING SOON 3.0</a>
+    </div>
+    <div class="nav-actions">
+      <button class="sound-btn" id="soundToggle" title="Звуки интерфейса">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+      </button>
+      <a href="#download" class="nav-dl mag-btn">
+        <span class="sheen"></span>Скачать
+      </a>
+    </div>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <header class="hero">
+    <!-- Floating Lyrics particles container -->
+    <div id="lyrics-stage"></div>
+
+    <!-- 3D Interactive Logo Emblem -->
+    <div class="logo-hero-box">
+      <canvas id="logo-3d" width="300" height="300"></canvas>
+      <div class="crystal-hint">✦ Покрути 3D логотип ✦</div>
+    </div>
+
+    <h1>StarDLC</h1>
+    <p class="hero-tag">
+      Бесплатный чит-клиент для Minecraft <b>1.21.4</b>.<br>
+      <b>116 модулей</b>, текст песни в воздухе, плеер в динамическом острове,
+      нейро-аура и liquid glass GUI.
+    </p>
+
+    <!-- LIVE DYNAMIC ISLAND REAL MUSIC & LYRICS SIMULATOR -->
+    <div class="dynamic-island" id="dynamicIsland">
+      <div class="di-vinyl-wrap">
+        <img id="diArt" src="https://i.scdn.co/image/ab67616d0000b27300c19d4b30dfaea49a237ebb" alt="Cover" class="di-cover-img">
+        <div class="di-icon-badge">🎵</div>
+      </div>
+      <div class="di-meta">
+        <div class="di-title" id="diTitle">порезы на руках</div>
+        <div class="di-artist">
+          <span id="diArtist">FORTUNA 812, elox1m · Spotify</span>
+          <div class="di-eq" id="diEq"><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
+      </div>
+      <div class="di-controls">
+        <button class="di-ctrl-btn" id="diPrevBtn" title="Предыдущий трек">⏮</button>
+        <button class="di-play-btn" id="diPlayBtn" title="Слушать реальный трек">
+          <svg id="diPlayIcon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </button>
+        <button class="di-ctrl-btn" id="diNextBtn" title="Следующий трек">⏭</button>
+      </div>
+      <div class="di-vol" title="Громкость">
+        <button class="di-vol-btn" id="diVolBtn" type="button" title="Без звука / Включить звук">
+          <svg id="diVolIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        </button>
+        <input type="range" id="diVol" class="di-vol-slider" min="0" max="1" step="0.01" value="0.75" aria-label="Громкость трека">
+        <span class="di-vol-val" id="diVolVal">75%</span>
       </div>
     </div>
+
+    <div class="badges">
+      <span class="badge free">FREE</span>
+      <span class="badge new">BUILD 2.2</span>
+      <span class="badge ntrl">116 МОДУЛЕЙ</span>
+      <span class="badge ntrl">MC 1.21.4</span>
+    </div>
+
+    <div class="cta">
+      <a href="#download" class="btn-primary mag-btn">
+        <span class="btn-sheen"></span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Скачать клиент
+      </a>
+      <a href="#modules" class="btn-ghost mag-btn">
+        <span class="btn-sheen"></span>
+        Смотреть модули
+      </a>
+    </div>
+  </header>
+
+  <!-- ── STATS BAR ── -->
+  <div class="stats-bar reveal">
+    <div class="stat-cell"><div class="stat-val">2.2</div><div class="stat-lbl">Билд</div></div>
+    <div class="stat-cell"><div class="stat-val">1.21.4</div><div class="stat-lbl">Версия MC</div></div>
+    <div class="stat-cell"><div class="stat-val">116</div><div class="stat-lbl">Модулей</div></div>
+    <div class="stat-cell"><div class="stat-val">0 ₽</div><div class="stat-lbl">Цена навсегда</div></div>
   </div>
-</section>
 
-<section id="screens">
-  <h2>Скрины <span>из игры</span></h2>
-  <p class="sub">Реальные кадры с билда 2.2, без фотошопа.</p>
-  <div class="shots">
-    <div class="shot reveal"><img src="assets/screen1.png" alt="" onerror="this.closest('.shot').classList.add('empty');this.remove()"><div class="cap">Меню клиента: liquid glass, поиск и категории</div></div>
-    <div class="shot reveal"><img src="assets/screen2.png" alt="" onerror="this.closest('.shot').classList.add('empty');this.remove()"><div class="cap">Ambience: кастомное небо и погода в игре</div></div>
-    <div class="shot reveal"><img src="assets/screen3.png" alt="" onerror="this.closest('.shot').classList.add('empty');this.remove()"><div class="cap">KillEffects в бою: красиво положил таргета</div></div>
-    <div class="shot reveal"><img src="assets/screen4.png" alt="" onerror="this.closest('.shot').classList.add('empty');this.remove()"><div class="cap">Лок-скрин с брендингом StarDLC</div></div>
-  </div>
-</section>
+  <!-- ── WHAT'S NEW ── -->
+  <section id="whatsnew">
+    <span class="sec-pill">ОБНОВЛЕНИЕ 2.2</span>
+    <h2>Что нового в <span>2.2</span></h2>
+    <p class="sub">Музыка стала частью интерфейса, а слова любимых треков теперь летают вокруг тебя.</p>
+    <div class="grid">
+      <div class="card reveal tilt-card">
+        <div class="card-glare"></div>
+        <span class="new-tag">NEW</span>
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg></div>
+        <h3>Музыка в «острове»</h3>
+        <p>Плеер переехал прямо в динамический остров: обложка, название и исполнитель, play / pause, предыдущий и следующий трек. Автоопределение Яндекс Музыки и Spotify.</p>
+      </div>
+      <div class="card reveal tilt-card">
+        <div class="card-glare"></div>
+        <span class="new-tag">NEW</span>
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/><circle cx="19" cy="18" r="2"/></svg></div>
+        <h3>Lyrics — текст песни в воздухе</h3>
+        <p>Слова песни собираются из букв вокруг тебя, живут несколько секунд и разлетаются. Режим караоке в такт музыке, цвет из обложки. Кириллица поддерживается полностью.</p>
+      </div>
+      <div class="card reveal tilt-card">
+        <div class="card-glare"></div>
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 8l7-5 7 5"/><path d="M5 16l7 5 7-5"/></svg></div>
+        <h3>Симметричная анимация</h3>
+        <p>Буквы слетаются при появлении и точно так же разлетаются при исчезновении. Длинные строки переносятся и не вылезают за экран.</p>
+      </div>
+      <div class="card reveal tilt-card">
+        <div class="card-glare"></div>
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div>
+        <h3>13 шрифтов</h3>
+        <p>Обычный, средний, полужирный, жирный, тонкий, округлый, Minecraft, массивный, узкий, геометрический, антиква, рукописный и дисплейный — под настроение и сборку.</p>
+      </div>
+    </div>
+  </section>
 
-<section id="reviews">
-  <h2>Отзывы <span>комьюнити</span></h2>
-  <p class="sub">Живая лента: что говорят игроки с серверов.</p>
-  <div id="revFeed"></div>
-</section>
+  <!-- ── FEATURES ── -->
+  <section id="features">
+    <span class="sec-pill">ТОПОВЫЕ ФУНКЦИИ</span>
+    <h2>Топовые <span>модули</span></h2>
+    <p class="sub">То, за что StarDLC любят с первой установки. Полное меню из 116 модулей — ниже.</p>
+    <div class="grid">
+      <div class="card reveal tilt-card">
+        <div class="card-glare"></div>
+        <div class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div>
+        <h3>Aura (нейро)</h3>
+        <p>Умная аура с выбором таргета и просчётом ударов. Бьёт плавно, выглядит чисто. Туториал по нейро-ауре — внутри архива с клиентом.</p>
+      </div>
+      <div class="card reveal tilt-card">
+        <div class="card-glare"></div>
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+        <h3>GUI: Liquid Glass</h3>
+        <p>Меню — чистый liquid glass: полупрозрачные слои, световые блики, преломления и плавные анимации 280ms. Открывается на RCTRL, выглядит дороже платных клиентов.</p>
+      </div>
+      <div class="card reveal tilt-card">
+        <div class="card-glare"></div>
+        <div class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></div>
+        <h3>Interface & HUD</h3>
+        <p>Пиллы FPS/BPS, TPS и координат, бинды предметов, элементы liquid glass по всему HUD. Кастомизация до пикселя: Fov, NoBob, CustomFog, Ambience.</p>
+      </div>
+      <div class="card reveal tilt-card">
+        <div class="card-glare"></div>
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <h3>ESP-пакет</h3>
+        <p>TargetEsp, StorageEsp, SoundEsp и Tracers: видишь и слышишь всё в радиусе чанков, даже сквозь стены и руду.</p>
+      </div>
+      <div class="card reveal tilt-card">
+        <div class="card-glare"></div>
+        <div class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/><rect x="8" y="3" width="8" height="8"/></svg></div>
+        <h3>Scaffold</h3>
+        <p>Мосты со скоростью света: блоки ставятся сами, ровно в линию, даже на спринте и в прыжке.</p>
+      </div>
+      <div class="card reveal tilt-card">
+        <div class="card-glare"></div>
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.9 2.6L22.5 18l-2.6.9L19 21.5l-.9-2.6L15.5 18l2.6-.9z"/></svg></div>
+        <h3>Ambience</h3>
+        <p>Кастомное фиолетовое небо, дождь и частицы — как на скринах. Клиент выглядит дорого даже с выключенными чит-функциями.</p>
+      </div>
+      <div class="card reveal tilt-card">
+        <div class="card-glare"></div>
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></div>
+        <h3>Стабильные 120+ FPS</h3>
+        <p>Рендер текста и эффектов переписан на нулевые аллокации в кадре — клиент не теряет кадры даже с включённым Lyrics.</p>
+      </div>
+      <div class="card reveal tilt-card">
+        <div class="card-glare"></div>
+        <div class="icon"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M8 10h8M8 14h5"/></svg></div>
+        <h3>Динамический остров</h3>
+        <p>Живой виджет сверху: статусы, уведомления и теперь музыка — всё в одном месте, не отвлекая от игры.</p>
+      </div>
+    </div>
+  </section>
 
-<section id="faq">
-  <h2>FAQ</h2>
-  <p class="sub">Коротко о главном. Читай прежде, чем писать в личку.</p>
-  <div class="faq">
-    <div class="faq-item glass"><button class="faq-q">Как запускать клиент?<span>+</span></button><div class="faq-a"><p>Клиент запускается <b>строго через Legacy Launcher</b>. Через обычный лаунчер Minecraft работать не будет — не мучайся, не трать время.</p></div></div>
-    <div class="faq-item glass"><button class="faq-q">Где лежат конфиги?<span>+</span></button><div class="faq-a"><p>Папка с конфигами создаётся <b>прямо на рабочем столе</b> после первого запуска. Если не нашёл — проверь антивирус, мог сожрать.</p></div></div>
-    <div class="faq-item glass"><button class="faq-q">Где тутор по нейро-ауре?<span>+</span></button><div class="faq-a"><p>Гайд по нейро-ауре лежит <b>внутри zip-архива</b> с клиентом. Просто нажми «Скачать», распакуй архив — файл с тутором там.</p></div></div>
-    <div class="faq-item glass"><button class="faq-q">Это реально бесплатно?<span>+</span></button><div class="faq-a"><p>Да. StarDLC полностью бесплатный, без подписок, ключей и скрытых платных модулей. Было и будет.</p></div></div>
-    <div class="faq-item glass"><button class="faq-q">Какие версии поддерживаются?<span>+</span></button><div class="faq-a"><p>Сейчас — <b>1.21.4</b>, это билд <b>2.2</b>. Клиент ставится как мод на Fabric.</p></div></div>
-    <div class="faq-item glass"><button class="faq-q">Как установить?<span>+</span></button><div class="faq-a"><p>Оба jar-файла из архива — в папку <b>mods</b>. Запускать <b>строго через Legacy Launcher</b>, через обычный лаунчер не пойдёт.</p></div></div>
-    <div class="faq-item glass"><button class="faq-q">Откуда берётся текст песен?<span>+</span></button><div class="faq-a"><p>Из открытых баз — <b>LRCLIB, NetEase, Genius</b>. Если у трека есть тайминги, строки идут в такт музыке. Если текста нет вообще — покажем название трека, а не пустоту. Для очень редких и совсем свежих треков текста может не быть.</p></div></div>
-    <div class="faq-item glass"><button class="faq-q">Музыка в острове — это что?<span>+</span></button><div class="faq-a"><p>Плеер прямо в динамическом острове: обложка, название, исполнитель и кнопки play / pause, назад / вперёд. Работает с <b>Яндекс Музыкой и Spotify</b> — остров сам показывает иконку источника.</p></div></div>
-  </div>
-</section>
+  <!-- ── MODULES ── -->
+  <section id="modules">
+    <span class="sec-pill">ПОЛНЫЙ СПИСОК</span>
+    <h2>Все <span>116 модулей</span></h2>
+    <p class="sub">Окно клиента прямо на сайте: выбирай категорию или ищи модуль поиском. Список актуален для билда 2.2.</p>
+    <div class="cwin reveal">
+      <div class="cwin-bar">
+        <span class="dot"></span>
+        <b>StarDLC</b> · build 2.2 · online
+        <span class="right">MC 1.21.4 · 116 мод.</span>
+      </div>
+      <div class="cwin-body">
+        <aside class="cwin-side" id="catSide"></aside>
+        <div class="cwin-main">
+          <div class="cwin-search"><input id="modSearch" type="text" placeholder="Поиск модуля…"></div>
+          <div class="mod-head"><b id="modCatName">COMBAT</b><span id="modCount"></span></div>
+          <div id="modGrid"></div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<section id="download">
-  <div class="final glass reveal">
-    <h2>Забирай <span>StarDLC</span></h2>
-    <p>Билд <b>2.2</b> для Minecraft 1.21.4: музыка в острове, текст песни в воздухе, 116 модулей. Запуск через <b>Legacy Launcher</b>.</p>
-    <a href="https://workupload.com/file/avrarNppfUt" target="_blank" rel="noopener" class="btn primary">Скачать 2.2 бесплатно</a>
-    <div class="note">Оба jar — в папку <b>mods</b> · Windows 10/11 · папка конфигов появится на рабочем столе</div>
-  </div>
-</section>
+  <!-- ── SCREENSHOTS (3D SLIDER) ── -->
+  <section id="screens">
+    <span class="sec-pill">РЕАЛЬНЫЕ СКРИНЫ</span>
+    <h2>Скрины <span>из игры</span></h2>
+    <p class="sub">Листай скрины в 3D или нажми на любой для полноэкранного просмотра.</p>
+    <div class="slider-container">
+      <div class="shots-track" id="shotsTrack">
+        <div class="shot-card reveal" data-src="assets/screen1.png">
+          <img src="assets/screen1.png" alt="Меню клиента: liquid glass">
+          <div class="cap">
+            <span>Меню клиента: liquid glass, поиск и категории</span>
+            <span class="zoom-hint">ZOOM</span>
+          </div>
+        </div>
+        <div class="shot-card reveal" data-src="assets/screen2.png">
+          <img src="assets/screen2.png" alt="Ambience: кастомное небо">
+          <div class="cap">
+            <span>Ambience: кастомное фиолетовое небо и погода</span>
+            <span class="zoom-hint">ZOOM</span>
+          </div>
+        </div>
+        <div class="shot-card reveal" data-src="assets/screen3.png">
+          <img src="assets/screen3.png" alt="KillEffects в бою">
+          <div class="cap">
+            <span>KillEffects в бою: красиво положил таргета</span>
+            <span class="zoom-hint">ZOOM</span>
+          </div>
+        </div>
+        <div class="shot-card reveal" data-src="assets/screen4.png">
+          <img src="assets/screen4.png" alt="Лок-скрин с брендингом">
+          <div class="cap">
+            <span>Лок-скрин с брендингом StarDLC</span>
+            <span class="zoom-hint">ZOOM</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<footer>
-  StarDLC © 2026 · не является продуктом Mojang / Microsoft<br>
-  <a href="https://t.me/StarBestDLC" target="_blank" rel="noopener">Telegram</a> ·
-  <a href="https://discord.gg/3nrpzeP5" target="_blank" rel="noopener">Discord</a>
-</footer>
+  <!-- ── REVIEWS ── -->
+  <section id="reviews">
+    <span class="sec-pill">ЖИВАЯ ЛЕНТА</span>
+    <h2>Отзывы <span>комьюнити</span></h2>
+    <p class="sub">Что говорят реальные игроки с серверов.</p>
+    <div id="revFeed"></div>
+  </section>
+
+  <!-- ── FAQ ── -->
+  <section id="faq">
+    <span class="sec-pill">ВОПРОСЫ И ОТВЕТЫ</span>
+    <h2>FAQ</h2>
+    <p class="sub">Коротко о главном. Читай прежде, чем писать в личку.</p>
+    <div class="faq">
+      <div class="faq-item"><button class="faq-q">Как запускать клиент?<span class="fq-icon">+</span></button><div class="faq-a"><p>Клиент запускается <b>строго через Legacy Launcher</b>. Через обычный лаунчер Minecraft работать не будет — не мучайся, не трать время.</p></div></div>
+      <div class="faq-item"><button class="faq-q">Где лежат конфиги?<span class="fq-icon">+</span></button><div class="faq-a"><p>Папка с конфигами создаётся <b>прямо на рабочем столе</b> после первого запуска. Если не нашёл — проверь антивирус, мог сожрать.</p></div></div>
+      <div class="faq-item"><button class="faq-q">Где тутор по нейро-ауре?<span class="fq-icon">+</span></button><div class="faq-a"><p>Гайд по нейро-ауре лежит <b>внутри zip-архива</b> с клиентом. Просто нажми «Скачать», распакуй архив — файл с тутором там.</p></div></div>
+      <div class="faq-item"><button class="faq-q">Это реально бесплатно?<span class="fq-icon">+</span></button><div class="faq-a"><p>Да. StarDLC полностью бесплатный, без подписок, ключей и скрытых платных модулей. Было и будет.</p></div></div>
+      <div class="faq-item"><button class="faq-q">Какие версии поддерживаются?<span class="fq-icon">+</span></button><div class="faq-a"><p>Сейчас — <b>1.21.4</b>, это билд <b>2.2</b>. Клиент ставится как мод на Fabric.</p></div></div>
+      <div class="faq-item"><button class="faq-q">Как установить?<span class="fq-icon">+</span></button><div class="faq-a"><p>Оба jar-файла из архива — в папку <b>mods</b>. Запускать <b>строго через Legacy Launcher</b>, через обычный лаунчер не пойдёт.</p></div></div>
+      <div class="faq-item"><button class="faq-q">Откуда берётся текст песен?<span class="fq-icon">+</span></button><div class="faq-a"><p>Из открытых баз — <b>LRCLIB, NetEase, Genius</b>. Если у трека есть тайминги, строки идут в такт музыке. Для очень редких треков текста может не быть.</p></div></div>
+      <div class="faq-item"><button class="faq-q">Музыка в острове — это что?<span class="fq-icon">+</span></button><div class="faq-a"><p>Плеер прямо в динамическом острове: обложка, название, исполнитель и кнопки play / pause, назад / вперёд. Работает с <b>Яндекс Музыкой и Spotify</b>.</p></div></div>
+    </div>
+  </section>
+
+  <!-- ── DOWNLOAD ── -->
+  <section id="download">
+    <div class="final-wrap reveal">
+      <h2>Забирай <span>StarDLC</span></h2>
+      <p>Билд <b>2.2</b> для Minecraft 1.21.4: музыка в острове, текст песни в воздухе, 116 модулей. Запуск через <b>Legacy Launcher</b>.</p>
+      <a href="https://workupload.com/file/avrarNppfUt" target="_blank" rel="noopener" class="btn-primary mag-btn" id="dl-btn">
+        <span class="btn-sheen"></span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Скачать 2.2 бесплатно
+      </a>
+      <div class="note">Оба jar — в папку <b>mods</b> · Windows 10/11 · папка конфигов появится на рабочем столе</div>
+    </div>
+  </section>
+
+  <footer>
+    StarDLC © 2026 · не является продуктом Mojang / Microsoft<br>
+    <a href="https://t.me/StarBestDLC" target="_blank" rel="noopener">Telegram</a> ·
+    <a href="https://discord.gg/3nrpzeP5" target="_blank" rel="noopener">Discord</a> ·
+    <a href="coming-soon.html">Coming Soon 3.0</a>
+  </footer>
+
+</div><!-- /site -->
 
 <script>
-const MODULES={
-COMBAT:['Aura','Aim Assist','Aim Bot','Anti Bot','Auto Anchor','Auto Armor','Auto Explosion','Auto Potion','Auto Soup','Auto Throw','Auto Totem','Back Track','Criticals','Elytra Target','Hitboxes','Knockback Tweaks','Trigger Bot','Velocity'],
-MOVEMENT:['Air Stuck','Auto Sprint','Elytra Strafe','Flight','Grim Glide','High Jump','No Slow','Speed','Spider','Strafe','Super Firework','Timer','Water Speed'],
-VISUALS:['Ambience','Anti Invisible','Beautifully','Cinematic Camera','Custom Fog','Donate Effects','ESP','Freelook','GrassierGrass','Interface','Kill Effects','Lyrics','Menu','Object Info','Position Predict','Pots Timer','Prediction','Removals','Sound ESP','Storage ESP','Swing Animation','TNT Timer','Target ESP','Trap ESP','View Model','Warden Helper','Waypoints','World','XRay'],
-PLAYER:['Auto Bot','Auto Brew','Auto Eat','Auto Farm','Auto Invisible','Auto Leave','Auto Shulker','Auto Swap','Blink','Boots Swap','Clan Upgrade','Click Through','Elytra Utils','Free Camera','Gui Move','Inventory Utils','Middle Click','Mine Helper','No Delay','No Fall','No Interact','No Push','No Rotate','Nuker','Player Utils','Scaffold','Stealer','Target Pearl','Tracker'],
-OTHER:['Adminsky','AntiAim','Assist','Auction','Auto Accept','Auto Auth','Auto Buy','Auto Duels','Auto Join','Auto Resell','Base Finder','Death Cords','Effect Remover','Fast Item Use','Globals Menu','Inventory Builder','Inventory Cleaner','Item Dumper','Item Pickup','KT Leave','Macro Menu','Name Protect','Panic','Russian Roulette','Sounds','Test','Web Utils']
-};
-const NEW_MODULES=new Set(['Lyrics']);
-const pillOf=(m,c)=>`<span class="pill${NEW_MODULES.has(m)?' isnew':''}">${m}${c?`<span class="tc">${c}</span>`:''}</span>`;
-const side=document.getElementById('catSide'),grid=document.getElementById('modGrid'),
-catName=document.getElementById('modCatName'),modCount=document.getElementById('modCount'),
-search=document.getElementById('modSearch');
-let curCat='COMBAT';
+/* ══════════════════════════════════════════════════════════════════
+   1. SOUND EFFECTS SYNTHESIZER (WEB AUDIO API)
+   ══════════════════════════════════════════════════════════════════ */
+class SoundEngine {
+  constructor() {
+    this.ctx = null;
+    this.enabled = false;
+    this.musicPlaying = false;
+    this.timer = null;
+  }
+  _init() {
+    if(!this.ctx){
+      const AC = window.AudioContext || window.webkitAudioContext;
+      this.ctx = new AC();
+    }
+    if(this.ctx.state === 'suspended') this.ctx.resume();
+  }
+  toggle() {
+    this.enabled = !this.enabled;
+    this._init();
+    if(this.enabled) this.playTone(520, 'sine', 0.15, 0.4);
+    return this.enabled;
+  }
+  playTone(freq=440, type='sine', vol=0.1, dur=0.25) {
+    if(!this.enabled && !this.musicPlaying) return;
+    try {
+      this._init();
+      const t = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const g = this.ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, t);
+      g.gain.setValueAtTime(0.001, t);
+      g.gain.linearRampToValueAtTime(vol, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      osc.connect(g);
+      g.connect(this.ctx.destination);
+      osc.start(t);
+      osc.stop(t + dur);
+    } catch(e){}
+  }
+  playChime() {
+    [440, 554.37, 659.25, 880].forEach((f, i) => {
+      setTimeout(() => this.playTone(f, 'sine', 0.08, 0.5), i * 40);
+    });
+  }
+  toggleMusicLoop(callback) {
+    this._init();
+    this.musicPlaying = !this.musicPlaying;
+    if(this.musicPlaying) {
+      // Upbeat cyber/phonk sequence: Dm -> F -> C -> Bb
+      const scale = [293.66, 349.23, 392.00, 440.00, 523.25, 587.33];
+      let step = 0;
+      this.timer = setInterval(() => {
+        const note = scale[step % scale.length];
+        this.playTone(note, 'triangle', 0.09, 0.35);
+        if(step % 2 === 0) this.playTone(146.83, 'sine', 0.12, 0.2); // sub bass
+        step++;
+      }, 220);
+    } else {
+      clearInterval(this.timer);
+    }
+    if(callback) callback(this.musicPlaying);
+  }
+}
+const sounds = new SoundEngine();
+const soundToggle = document.getElementById('soundToggle');
+soundToggle.addEventListener('click', () => {
+  const active = sounds.toggle();
+  soundToggle.classList.toggle('active', active);
+});
 
-Object.keys(MODULES).forEach(c=>{
-  const b=document.createElement('button');
-  b.className='cat-row'+(c===curCat?' active':'');
-  b.innerHTML=`${c}<span class="cnt">${MODULES[c].length}</span>`;
-  b.onclick=()=>{search.value='';curCat=c;
-    side.querySelectorAll('.cat-row').forEach(x=>x.classList.remove('active'));b.classList.add('active');
-    swap(()=>renderCat(c));};
+/* ══════════════════════════════════════════════════════════════════
+   2. TOP SCROLL PROGRESS BAR & NAVBAR STATE
+   ══════════════════════════════════════════════════════════════════ */
+const scrollBar = document.getElementById('scroll-progress');
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+  const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  const scrolled = (winScroll / height) * 100;
+  scrollBar.style.width = scrolled + '%';
+  navbar.classList.toggle('scrolled', winScroll > 60);
+});
+
+/* ══════════════════════════════════════════════════════════════════
+   3. WEBGL FLUID WARP BACKGROUND
+   ══════════════════════════════════════════════════════════════════ */
+(function(){
+  const canvas = document.getElementById('fluid-canvas');
+  const gl = canvas.getContext('webgl');
+  if(!gl) return;
+
+  const vert = `
+    attribute vec2 a_pos;
+    varying vec2 v_uv;
+    void main(){ v_uv=(a_pos+1.0)*0.5; gl_Position=vec4(a_pos,0,1); }
+  `;
+  const frag = `
+    precision highp float;
+    varying vec2 v_uv;
+    uniform float u_t;
+    uniform vec2  u_res;
+    uniform vec2  u_mouse;
+
+    vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
+    vec2 mod289(vec2 x){return x-floor(x*(1.0/289.0))*289.0;}
+    vec3 permute(vec3 x){return mod289(((x*34.0)+1.0)*x);}
+    float snoise(vec2 v){
+      const vec4 C=vec4(0.211324865405187,0.366025403784439,-0.577350269189626,0.024390243902439);
+      vec2 i=floor(v+dot(v,C.yy));
+      vec2 x0=v-i+dot(i,C.xx);
+      vec2 i1=(x0.x>x0.y)?vec2(1,0):vec2(0,1);
+      vec4 x12=x0.xyxy+C.xxzz; x12.xy-=i1;
+      i=mod289(i);
+      vec3 p=permute(permute(i.y+vec3(0,i1.y,1))+i.x+vec3(0,i1.x,1));
+      vec3 m=max(0.5-vec3(dot(x0,x0),dot(x12.xy,x12.xy),dot(x12.zw,x12.zw)),0.0);
+      m=m*m; m=m*m;
+      vec3 x=2.0*fract(p*C.www)-1.0;
+      vec3 h=abs(x)-0.5; vec3 ox=floor(x+0.5); vec3 a0=x-ox;
+      m*=1.79284291400159-0.85373472095314*(a0*a0+h*h);
+      vec3 g; g.x=a0.x*x0.x+h.x*x0.y; g.yz=a0.yz*x12.xz+h.yz*x12.yw;
+      return 130.0*dot(m,g);
+    }
+
+    vec3 palette(float t){
+      vec3 a=vec3(0.5,0.3,0.5);
+      vec3 b=vec3(0.5,0.3,0.5);
+      vec3 c=vec3(1.0,1.0,0.6);
+      vec3 d=vec3(0.80,0.10,0.50);
+      return a+b*cos(6.28318*(c*t+d));
+    }
+
+    void main(){
+      vec2 ar=v_uv*vec2(u_res.x/u_res.y,1.0);
+      vec2 tm=u_mouse*vec2(u_res.x/u_res.y,1.0);
+      vec2 toM=tm-ar;
+      float md=length(toM);
+      vec2 warp=ar+vec2(snoise(ar*1.8+u_t*0.12),snoise(ar*1.8-u_t*0.10+31.0))*0.05;
+      warp+=normalize(toM+.001)*exp(-md*5.0)*0.05;
+
+      float l0=snoise(warp*2.0+u_t*0.13)*0.5+0.5;
+      float l1=snoise(warp*3.5-u_t*0.09+17.0)*0.5+0.5;
+      float blob=l0*0.6+l1*0.4;
+
+      float aberr=0.014;
+      float bR=snoise((warp+vec2(aberr,0))*2.0+u_t*0.13)*0.5+0.5;
+      float bB=snoise((warp-vec2(aberr,0))*2.0+u_t*0.13)*0.5+0.5;
+
+      vec3 col=vec3(palette(bR+u_t*0.04).r,palette(blob+u_t*0.04).g,palette(bB+u_t*0.04).b);
+      col*=0.48;
+      col=max(col,vec3(0.005,0.003,0.010));
+
+      float vign=1.0-smoothstep(0.3,0.95,length(v_uv-0.5)*1.5);
+      col*=vign;
+
+      gl_FragColor=vec4(col,1.0);
+    }
+  `;
+
+  function mk(type,src){
+    const s=gl.createShader(type);
+    gl.shaderSource(s,src); gl.compileShader(s); return s;
+  }
+  const prog=gl.createProgram();
+  gl.attachShader(prog,mk(gl.VERTEX_SHADER,vert));
+  gl.attachShader(prog,mk(gl.FRAGMENT_SHADER,frag));
+  gl.linkProgram(prog); gl.useProgram(prog);
+
+  const buf=gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
+  const loc=gl.getAttribLocation(prog,'a_pos');
+  gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+
+  const uT=gl.getUniformLocation(prog,'u_t');
+  const uRes=gl.getUniformLocation(prog,'u_res');
+  const uMouse=gl.getUniformLocation(prog,'u_mouse');
+
+  let W=0,H=0,mx=0.5,my=0.5,t=0,last=performance.now();
+
+  function resize(){
+    W=canvas.width=window.innerWidth;
+    H=canvas.height=window.innerHeight;
+    gl.viewport(0,0,W,H);
+  }
+  resize();
+  window.addEventListener('resize',resize);
+  window.addEventListener('mousemove',e=>{mx=e.clientX/W;my=1-e.clientY/H;});
+
+  function loop(now){
+    const dt=Math.min((now-last)/1000,0.05); last=now; t+=dt;
+    gl.uniform1f(uT,t); gl.uniform2f(uRes,W,H); gl.uniform2f(uMouse,mx,my);
+    gl.drawArrays(gl.TRIANGLES,0,6);
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+
+/* ══════════════════════════════════════════════════════════════════
+   4. INTERACTIVE 3D STARDLC LOGO EMBLEM (HERO)
+   Full 3D Coin/Medallion with logo.png, 3D extruded bevel,
+   and gyroscopic orbital rings with momentum drag physics
+   ══════════════════════════════════════════════════════════════════ */
+(function(){
+  const canvas = document.getElementById('logo-3d');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2, cy = H / 2;
+
+  const logoImg = new Image();
+  logoImg.src = 'assets/logo.png';
+  let imgLoaded = false;
+  logoImg.onload = () => { imgLoaded = true; };
+
+  let rotX = 0.2, rotY = 0.4;
+  let velX = 0.003, velY = 0.015;
+  let isDragging = false, lastMX = 0, lastMY = 0;
+
+  canvas.addEventListener('mousedown', e => {
+    isDragging = true; lastMX = e.clientX; lastMY = e.clientY;
+  });
+  window.addEventListener('mouseup', () => isDragging = false);
+  window.addEventListener('mousemove', e => {
+    if(!isDragging) return;
+    const dx = e.clientX - lastMX;
+    const dy = e.clientY - lastMY;
+    velY = dx * 0.007;
+    velX = dy * 0.007;
+    rotY += velY;
+    rotX += velX;
+    lastMX = e.clientX; lastMY = e.clientY;
+  });
+
+  // Touch support
+  canvas.addEventListener('touchstart', e => {
+    if(e.touches.length === 1){
+      isDragging = true; lastMX = e.touches[0].clientX; lastMY = e.touches[0].clientY;
+    }
+  });
+  window.addEventListener('touchend', () => isDragging = false);
+  window.addEventListener('touchmove', e => {
+    if(!isDragging || e.touches.length !== 1) return;
+    const dx = e.touches[0].clientX - lastMX;
+    const dy = e.touches[0].clientY - lastMY;
+    rotY += dx * 0.007; rotX += dy * 0.007;
+    lastMX = e.touches[0].clientX; lastMY = e.touches[0].clientY;
+  });
+
+  // Orbital particles around the 3D logo
+  const starParticles = Array.from({length: 20}, (_, i) => ({
+    angle: (i / 20) * Math.PI * 2,
+    radius: 125 + Math.random() * 25,
+    speed: 0.015 + Math.random() * 0.015,
+    y: (Math.random() - 0.5) * 60,
+    size: 2 + Math.random() * 2.2
+  }));
+
+  function rotate3D(x, y, z, rx, ry) {
+    // Y rotation
+    const cosY = Math.cos(ry), sinY = Math.sin(ry);
+    const x1 = x * cosY + z * sinY;
+    const z1 = -x * sinY + z * cosY;
+    // X rotation
+    const cosX = Math.cos(rx), sinX = Math.sin(rx);
+    const y2 = y * cosX - z1 * sinX;
+    const z2 = y * sinX + z1 * cosX;
+    return {x: x1, y: y2, z: z2};
+  }
+
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+
+    if(!isDragging){
+      velX *= 0.95; velY *= 0.95;
+      rotX += 0.004 + velX;
+      rotY += 0.012 + velY;
+    }
+
+    // 1. Ambient energy aura
+    const radGlow = ctx.createRadialGradient(cx, cy, 15, cx, cy, 130);
+    radGlow.addColorStop(0, 'rgba(168, 85, 247, 0.45)');
+    radGlow.addColorStop(0.5, 'rgba(0, 245, 212, 0.18)');
+    radGlow.addColorStop(1, 'transparent');
+    ctx.fillStyle = radGlow;
+    ctx.beginPath(); ctx.arc(cx,cy,130,0,Math.PI*2); ctx.fill();
+
+    // 2. Gyroscopic orbital rings in 3D
+    const ringSegments = 40;
+    // Ring 1 (Cyan inclined)
+    ctx.beginPath();
+    for(let i=0; i<=ringSegments; i++){
+      const a = (i / ringSegments) * Math.PI * 2;
+      const rx = Math.cos(a) * 115;
+      const rz = Math.sin(a) * 115;
+      const ry = Math.sin(a) * 35;
+      const p = rotate3D(rx, ry, rz, rotX * 0.5, rotY * 0.7);
+      const px = cx + p.x;
+      const py = cy + p.y;
+      if(i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = 'rgba(0, 245, 212, 0.45)';
+    ctx.lineWidth = 1.2;
+    ctx.shadowColor = 'rgba(0,245,212,0.8)';
+    ctx.shadowBlur = 8;
+    ctx.stroke();
+
+    // Ring 2 (Purple counter-inclined)
+    ctx.beginPath();
+    for(let i=0; i<=ringSegments; i++){
+      const a = (i / ringSegments) * Math.PI * 2;
+      const rx = Math.cos(a) * 125;
+      const rz = Math.sin(a) * 125;
+      const ry = -Math.sin(a) * 45;
+      const p = rotate3D(rx, ry, rz, -rotX * 0.4, -rotY * 0.6);
+      const px = cx + p.x;
+      const py = cy + p.y;
+      if(i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = 'rgba(192, 132, 252, 0.4)';
+    ctx.lineWidth = 1.2;
+    ctx.shadowColor = 'rgba(168,85,247,0.8)';
+    ctx.shadowBlur = 8;
+    ctx.stroke();
+
+    // 3. 3D Medallion / Coin with Logo
+    const coinR = 76;
+    const thickness = 14;
+
+    // Normal vector of front face: (0, 0, 1)
+    const normal = rotate3D(0, 0, 1, rotX, rotY);
+    const isFrontFacing = normal.z >= 0;
+
+    // Center of front and back faces in 3D
+    const frontCenter = rotate3D(0, 0, thickness / 2, rotX, rotY);
+    const backCenter  = rotate3D(0, 0, -thickness / 2, rotX, rotY);
+
+    // Draw cylindrical edge segments
+    const edgeSegments = 32;
+    for(let i=0; i<edgeSegments; i++){
+      const a1 = (i / edgeSegments) * Math.PI * 2;
+      const a2 = ((i + 1) / edgeSegments) * Math.PI * 2;
+
+      const p1Front = rotate3D(Math.cos(a1)*coinR, Math.sin(a1)*coinR, thickness/2, rotX, rotY);
+      const p2Front = rotate3D(Math.cos(a2)*coinR, Math.sin(a2)*coinR, thickness/2, rotX, rotY);
+      const p1Back  = rotate3D(Math.cos(a1)*coinR, Math.sin(a1)*coinR, -thickness/2, rotX, rotY);
+      const p2Back  = rotate3D(Math.cos(a2)*coinR, Math.sin(a2)*coinR, -thickness/2, rotX, rotY);
+
+      // Normal of this edge facet
+      const midA = (a1 + a2) * 0.5;
+      const edgeNorm = rotate3D(Math.cos(midA), Math.sin(midA), 0, rotX, rotY);
+
+      if(edgeNorm.z > -0.2){
+        // Specular metallic lighting on edge
+        const lightDot = Math.max(0.15, edgeNorm.x * 0.4 + edgeNorm.y * -0.5 + edgeNorm.z * 0.6);
+        ctx.beginPath();
+        ctx.moveTo(cx + p1Front.x, cy + p1Front.y);
+        ctx.lineTo(cx + p2Front.x, cy + p2Front.y);
+        ctx.lineTo(cx + p2Back.x,  cy + p2Back.y);
+        ctx.lineTo(cx + p1Back.x,  cy + p1Back.y);
+        ctx.closePath();
+
+        ctx.fillStyle = `rgba(${Math.floor(124 + lightDot*100)}, ${Math.floor(58 + lightDot*120)}, ${Math.floor(237 + lightDot*18)}, ${0.65 + lightDot*0.3})`;
+        ctx.strokeStyle = `rgba(255,255,255,${lightDot * 0.5})`;
+        ctx.lineWidth = 0.5;
+        ctx.fill();
+        ctx.stroke();
+      }
+    }
+
+    // Draw Face: Front or Back
+    const activeCenter = isFrontFacing ? frontCenter : backCenter;
+    const cosAngle = Math.abs(normal.z);
+
+    ctx.save();
+    ctx.translate(cx + activeCenter.x, cy + activeCenter.y);
+
+    // Compute 2D ellipse scale & rotation from 3D orientation
+    const scaleX = coinR;
+    const scaleY = coinR * Math.max(0.1, cosAngle);
+    const faceAngle = Math.atan2(normal.y, normal.x);
+
+    ctx.rotate(faceAngle + (isFrontFacing ? 0 : Math.PI));
+
+    // Outer Bezel Ring
+    ctx.beginPath();
+    ctx.ellipse(0, 0, scaleX, scaleY, 0, 0, Math.PI * 2);
+    ctx.fillStyle = isFrontFacing ? 'rgba(20, 10, 35, 0.95)' : 'rgba(10, 5, 20, 0.95)';
+    ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = isFrontFacing ? 'rgba(0, 245, 212, 0.85)' : 'rgba(168, 85, 247, 0.7)';
+    ctx.shadowColor = isFrontFacing ? '#00f5d4' : '#a855f7';
+    ctx.shadowBlur = 14;
+    ctx.stroke();
+
+    // Clip to draw logo image inside coin
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(0, 0, scaleX * 0.9, scaleY * 0.9, 0, 0, Math.PI * 2);
+    ctx.clip();
+
+    if(imgLoaded && isFrontFacing){
+      // Draw 3D logo perspective mapping
+      ctx.drawImage(logoImg, -scaleX * 0.9, -scaleY * 0.9, scaleX * 1.8, scaleY * 1.8);
+    } else {
+      // Back face StarDLC Rune Crest
+      ctx.fillStyle = 'rgba(124, 58, 237, 0.25)';
+      ctx.fill();
+      ctx.font = `bold ${Math.floor(22 * cosAngle)}px var(--mono)`;
+      ctx.fillStyle = '#c084fc';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('STARDLC', 0, 0);
+    }
+
+    // Specular Glass Glare Sweep across the face
+    const glareX = (normal.x * 60);
+    const gradGlare = ctx.createLinearGradient(-scaleX + glareX, -scaleY, scaleX + glareX, scaleY);
+    gradGlare.addColorStop(0, 'rgba(255,255,255,0)');
+    gradGlare.addColorStop(0.45, 'rgba(255,255,255,0.02)');
+    gradGlare.addColorStop(0.5, `rgba(255,255,255,${0.35 * cosAngle})`);
+    gradGlare.addColorStop(0.55, 'rgba(255,255,255,0.02)');
+    gradGlare.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = gradGlare;
+    ctx.fillRect(-scaleX, -scaleY, scaleX * 2, scaleY * 2);
+
+    ctx.restore(); // end clip
+    ctx.restore(); // end translate/rotate
+
+    // 4. Orbiting sparkle stars
+    starParticles.forEach(pt => {
+      pt.angle += pt.speed;
+      const sx = Math.cos(pt.angle) * pt.radius;
+      const sz = Math.sin(pt.angle) * pt.radius;
+      const p = rotate3D(sx, pt.y, sz, rotX * 0.5, rotY * 0.8);
+
+      const px = cx + p.x;
+      const py = cy + p.y;
+      const alpha = p.z > 0 ? 0.9 : 0.35;
+
+      ctx.beginPath();
+      ctx.arc(px, py, pt.size, 0, Math.PI * 2);
+      ctx.fillStyle = p.z > 0 ? `rgba(0, 245, 212, ${alpha})` : `rgba(168, 85, 247, ${alpha})`;
+      ctx.shadowColor = '#00f5d4';
+      ctx.shadowBlur = 8;
+      ctx.fill();
+    });
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ══════════════════════════════════════════════════════════════════
+   5. REAL STREAMING MUSIC PLAYER & DYNAMIC ISLAND 3D LYRICS
+   Free streaming preview tracks + real Web Audio frequency analyzer
+   ══════════════════════════════════════════════════════════════════ */
+(function(){
+  const island = document.getElementById('dynamicIsland');
+  const playBtn = document.getElementById('diPlayBtn');
+  const prevBtn = document.getElementById('diPrevBtn');
+  const nextBtn = document.getElementById('diNextBtn');
+  const playIcon = document.getElementById('diPlayIcon');
+  const trackTitle = document.getElementById('diTitle');
+  const trackArtist = document.getElementById('diArtist');
+  const coverImg = document.getElementById('diArt');
+  const eqSpans = document.querySelectorAll('#diEq span');
+  const stage = document.getElementById('lyrics-stage');
+  const volSlider = document.getElementById('diVol');
+  const volBtn = document.getElementById('diVolBtn');
+  const volIcon = document.getElementById('diVolIcon');
+  const volVal = document.getElementById('diVolVal');
+
+  if(!island || !playBtn) return;
+
+  // Real Russian Alt / Hyperpop / Rock Playlist with actual song lyrics
+  const PLAYLIST = [
+    {
+      title: 'порезы на руках',
+      artist: 'FORTUNA 812, elox1m',
+      src: 'https://p.scdn.co/mp3-preview/d384e8aec0049c59c0907914810922f14959710f',
+      art: 'https://i.scdn.co/image/ab67616d0000b27300c19d4b30dfaea49a237ebb',
+      lyrics: [
+        'Порезы на руках, я не знаю, как сказать',
+        'Я так устал от этой боли в темноте',
+        'Забудь меня, забудь всё то, что было',
+        'Капли крови на холодном кафеле',
+        'Ты смотришь на меня, но ты не видишь',
+        'Я закрываю дверь, оставив позади весь свет',
+        'Скажи мне, почему всё рушится опять?',
+        '812 в моём сердце навсегда',
+        'Я растворяюсь в дыме сигарет',
+        'Порезы на руках заживут, но память нет'
+      ]
+    },
+    {
+      title: 'Нон стоп',
+      artist: 'Пошлая Молли',
+      src: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/3e/30/08/3e30083e-2553-455a-9210-3b2c57b562c4/mzaf_17119155812151515294.plus.aac.p.m4a',
+      art: 'https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/01/b6/46/01b64642-028a-8d4b-a70a-68b5c0e827cd/cover.jpg/300x300bb.jpg',
+      lyrics: [
+        'Музыка громче, глаза закрыты',
+        'Это нон-стоп, ночью открытий',
+        'Делай что хочешь, я всё прощаю',
+        'Я в твоих венах тихо растаю',
+        'Басы долбят по перепонкам',
+        'Ты так красива и так жестока',
+        'В темноте клуба мы забываем всё',
+        'Эту ночь у нас никто не заберёт'
+      ]
+    },
+    {
+      title: 'Буду твоим пёсиком',
+      artist: 'Пошлая Молли',
+      src: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/ac/46/5f/ac465f5d-a7b8-48c6-d8be-02a9a124beb9/mzaf_11306468569371338842.plus.aac.p.m4a',
+      art: 'https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/5d/7a/e8/5d7ae8a6-9a1b-a5a7-21ca-1606e5067000/cover.jpg/300x300bb.jpg',
+      lyrics: [
+        'Я буду твоим верным пёсиком',
+        'Гулять с тобой холодным осенним деньком',
+        'Ты гладишь меня по голове рукой',
+        'И говоришь мне: «Ты только мой»',
+        'Я жду тебя у школьного порога',
+        'Ведь без тебя мне в сердце так одиноко'
+      ]
+    },
+    {
+      title: 'Типичная вечеринка с бассейном',
+      artist: 'Пошлая Молли',
+      src: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/6b/62/61/6b6261de-c5c6-d270-7246-325aebffebc6/mzaf_5217601408464000030.plus.aac.p.m4a',
+      art: 'https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/5d/7a/e8/5d7ae8a6-9a1b-a5a7-21ca-1606e5067000/cover.jpg/300x300bb.jpg',
+      lyrics: [
+        'Типичная вечеринка с бассейном',
+        'Все пьют коктейли, вокруг веселье',
+        'Ты прыгаешь в воду прямо в одежде',
+        'И смотришь с улыбкой, полной надежды',
+        'Музыка рвёт колонки до утра',
+        'Мы молоды, и эта ночь — наша игра'
+      ]
+    },
+    {
+      title: 'Мишка (feat. KATERINA)',
+      artist: 'Пошлая Молли',
+      src: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/98/fc/33/98fc33d8-39ee-5ec1-1adb-44260fd15647/mzaf_13899961107443380301.plus.aac.p.m4a',
+      art: 'https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/23/54/c2/2354c26f-844e-fdb3-3b9d-269bfdae84a3/cover.jpg/300x300bb.jpg',
+      lyrics: [
+        'Мой плюшевый мишка сидит на кровати',
+        'Он видел всё то, о чём лучше молчать',
+        'Слёзы на щёчках, тушь потекла',
+        'Ты снова одна в тишине у окна',
+        'Мишка обнимет, поймёт и простит'
+      ]
+    },
+    {
+      title: 'Контракт',
+      artist: 'Пошлая Молли',
+      src: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/d7/95/57/d795575a-c2b5-67f3-4537-0d67d46786a5/mzaf_10416216227020061181.plus.aac.p.m4a',
+      art: 'https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/1b/b5/9f/1bb59fd7-5af7-72f8-b5c7-e8a8c42234e2/cover.jpg/300x300bb.jpg',
+      lyrics: [
+        'Мы подписали с тобою контракт',
+        'Никаких чувств, только чистый азарт',
+        'Но почему-то сердечко стучит',
+        'Когда твой телефон в ночи молчит',
+        'Нарушили правила мы невзначай'
+      ]
+    }
+  ];
+
+  let currentIdx = 0;
+  let isPlaying = false;
+  let lyricIdx = 0;
+  let lyricTimer = null;
+
+  // Real HTML5 Audio Element for direct playback
+  const audio = new Audio();
+  audio.preload = 'auto';
+  audio.volume = 0.75;
+
+  // Volume UI handler
+  function updateVolUI(v) {
+    if(volVal) volVal.textContent = Math.round(v * 100) + '%';
+    if(volSlider) {
+      const pct = v * 100;
+      volSlider.style.background = `linear-gradient(90deg, var(--cyan) ${pct}%, rgba(255,255,255,0.15) ${pct}%)`;
+    }
+    if(volIcon) {
+      if(v <= 0.01) {
+        volIcon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>';
+      } else if(v < 0.5) {
+        volIcon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>';
+      } else {
+        volIcon.innerHTML = '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>';
+      }
+    }
+  }
+
+  volSlider?.addEventListener('input', e => {
+    const v = parseFloat(e.target.value);
+    audio.volume = v;
+    updateVolUI(v);
+  });
+
+  let savedVol = 0.75;
+  volBtn?.addEventListener('click', () => {
+    if(audio.volume > 0.01) {
+      savedVol = audio.volume;
+      audio.volume = 0;
+      if(volSlider) volSlider.value = 0;
+      updateVolUI(0);
+    } else {
+      audio.volume = savedVol || 0.75;
+      if(volSlider) volSlider.value = audio.volume;
+      updateVolUI(audio.volume);
+    }
+  });
+
+  function loadTrack(idx) {
+    currentIdx = (idx + PLAYLIST.length) % PLAYLIST.length;
+    const track = PLAYLIST[currentIdx];
+    trackTitle.textContent = track.title;
+    trackArtist.textContent = `${track.artist} · Spotify / Apple`;
+    coverImg.src = track.art;
+    audio.src = track.src;
+    audio.load();
+    lyricIdx = 0;
+    if(isPlaying && track.lyrics && track.lyrics.length > 0) {
+      spawnLyric(track.lyrics[0]);
+    }
+  }
+  loadTrack(0);
+
+  function spawnLyric(text) {
+    if(!stage || !text) return;
+    const el = document.createElement('div');
+    el.className = 'lyric-item';
+    el.innerHTML = `<span style="color:var(--cyan);opacity:0.8;margin-right:8px">♪</span>${text}`;
+    const rx = 10 + Math.random() * 55;
+    const ry = 18 + Math.random() * 45;
+    el.style.left = rx + 'vw';
+    el.style.top = ry + 'vh';
+    stage.appendChild(el);
+    setTimeout(() => el.remove(), 3800);
+  }
+
+  function setPlayingState(playing) {
+    isPlaying = playing;
+    island.classList.toggle('playing', playing);
+    playIcon.innerHTML = playing
+      ? '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'
+      : '<polygon points="5 3 19 12 5 21 5 3"/>';
+
+    if(playing) {
+      const curLyrics = PLAYLIST[currentIdx].lyrics || [];
+      if(curLyrics.length > 0) {
+        spawnLyric(curLyrics[lyricIdx % curLyrics.length]);
+      }
+      clearInterval(lyricTimer);
+      lyricTimer = setInterval(() => {
+        lyricIdx++;
+        const lyrics = PLAYLIST[currentIdx].lyrics || [];
+        if(lyrics.length > 0) {
+          spawnLyric(lyrics[lyricIdx % lyrics.length]);
+        }
+      }, 2300);
+    } else {
+      clearInterval(lyricTimer);
+      eqSpans.forEach(s => s.style.height = '4px');
+    }
+  }
+
+  function togglePlay() {
+    if(isPlaying) {
+      audio.pause();
+      setPlayingState(false);
+    } else {
+      const p = audio.play();
+      if(p !== undefined) {
+        p.then(() => {
+          setPlayingState(true);
+        }).catch(err => {
+          console.warn('Playback error, trying next track:', err);
+          loadTrack(currentIdx + 1);
+          audio.play().then(() => setPlayingState(true)).catch(() => {
+            sounds.toggleMusicLoop(synced => setPlayingState(synced));
+          });
+        });
+      }
+    }
+  }
+
+  playBtn.addEventListener('click', togglePlay);
+
+  prevBtn?.addEventListener('click', () => {
+    loadTrack(currentIdx - 1);
+    audio.play().then(() => setPlayingState(true)).catch(()=>{});
+  });
+
+  nextBtn?.addEventListener('click', () => {
+    loadTrack(currentIdx + 1);
+    audio.play().then(() => setPlayingState(true)).catch(()=>{});
+  });
+
+  audio.addEventListener('ended', () => {
+    loadTrack(currentIdx + 1);
+    audio.play().then(() => setPlayingState(true)).catch(()=>{});
+  });
+
+  audio.addEventListener('error', () => {
+    console.warn('Track stream error, auto advancing to next');
+    loadTrack(currentIdx + 1);
+    if(isPlaying) audio.play();
+  });
+
+  // Smooth EQ bar animation loop
+  let eqPhase = 0;
+  function updateVisualizer() {
+    if(isPlaying) {
+      eqPhase += 0.16;
+      eqSpans.forEach((span, i) => {
+        const h = 4 + Math.abs(Math.sin(eqPhase + i * 0.95)) * 9 + Math.cos(eqPhase * 1.8 + i) * 3;
+        span.style.height = Math.max(3, Math.min(16, h)).toFixed(1) + 'px';
+      });
+    }
+    requestAnimationFrame(updateVisualizer);
+  }
+  updateVisualizer();
+})();
+
+/* ══════════════════════════════════════════════════════════════════
+   6. 3D CARD TILT WITH HOLOGRAPHIC SPECULAR GLARE
+   ══════════════════════════════════════════════════════════════════ */
+document.querySelectorAll('.tilt-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    const rotX = ((y - cy) / cy) * -9;
+    const rotY = ((x - cx) / cx) * 9;
+
+    card.style.transform = `perspective(1000px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) translateY(-6px)`;
+    card.style.setProperty('--gx', `${(x / rect.width) * 100}%`);
+    card.style.setProperty('--gy', `${(y / rect.height) * 100}%`);
+  });
+
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)';
+  });
+});
+
+/* ══════════════════════════════════════════════════════════════════
+   7. 3D SCREENSHOTS LIGHTBOX & HORIZONTAL SWIPE
+   ══════════════════════════════════════════════════════════════════ */
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightbox-img');
+const lightboxClose = document.getElementById('lightbox-close');
+
+document.querySelectorAll('.shot-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const src = card.dataset.src;
+    if(!src) return;
+    lightboxImg.src = src;
+    lightbox.classList.add('active');
+    sounds.playTone(660, 'sine', 0.08, 0.3);
+  });
+});
+
+lightboxClose.addEventListener('click', () => {
+  lightbox.classList.remove('active');
+});
+lightbox.addEventListener('click', e => {
+  if(e.target === lightbox) lightbox.classList.remove('active');
+});
+
+/* ══════════════════════════════════════════════════════════════════
+   8. CLIENT HUD FLUCTUATION SIMULATOR
+   ══════════════════════════════════════════════════════════════════ */
+const hudFps = document.getElementById('hud-fps');
+const hudBps = document.getElementById('hud-bps');
+const hudPing = document.getElementById('hud-ping');
+setInterval(() => {
+  if(hudFps) hudFps.textContent = Math.floor(138 + Math.random() * 8);
+  if(hudBps) hudBps.textContent = (8.2 + (Math.random() - 0.5) * 0.6).toFixed(2);
+  if(hudPing) hudPing.textContent = Math.floor(11 + Math.random() * 4) + ' ms';
+}, 1200);
+
+/* ══════════════════════════════════════════════════════════════════
+   9. GLASS SHARD CLICK BURST
+   ══════════════════════════════════════════════════════════════════ */
+const shardCanvas = document.getElementById('shard-canvas');
+const shardCtx = shardCanvas.getContext('2d');
+let shards = [];
+function resizeShard(){ shardCanvas.width = innerWidth; shardCanvas.height = innerHeight; }
+resizeShard(); window.addEventListener('resize', resizeShard);
+
+function burst(x, y) {
+  sounds.playTone(720, 'sine', 0.06, 0.2);
+  for(let i = 0; i < 24; i++){
+    const a = (Math.PI * 2 * i / 24) + Math.random() * 0.4;
+    const sp = 80 + Math.random() * 180;
+    shards.push({
+      x, y,
+      vx: Math.cos(a) * sp,
+      vy: Math.sin(a) * sp - 50,
+      rot: Math.random() * Math.PI * 2,
+      vr: (Math.random() - 0.5) * 8,
+      len: 8 + Math.random() * 26,
+      w: 1 + Math.random() * 2.2,
+      alpha: 0.9,
+      life: 1,
+      decay: 0.024 + Math.random() * 0.02,
+      g: 160 + Math.random() * 80,
+      col: Math.random() > 0.5 ? 'rgba(168,85,247,' : 'rgba(0,245,212,'
+    });
+  }
+}
+
+(function shardLoop(){
+  shardCtx.clearRect(0,0,shardCanvas.width,shardCanvas.height);
+  for(let i = shards.length - 1; i >= 0; i--){
+    const s = shards[i];
+    s.vy += s.g / 60;
+    s.x  += s.vx / 60;
+    s.y  += s.vy / 60;
+    s.rot += s.vr / 60;
+    s.vx *= 0.985;
+    s.life -= s.decay;
+    if(s.life <= 0){ shards.splice(i,1); continue; }
+
+    const al = s.alpha * s.life;
+    shardCtx.save();
+    shardCtx.translate(s.x, s.y);
+    shardCtx.rotate(s.rot);
+    shardCtx.beginPath();
+    shardCtx.moveTo(0, -s.len * 0.5);
+    shardCtx.lineTo(s.w * 0.5, s.len * 0.5);
+    shardCtx.lineTo(-s.w * 0.5, s.len * 0.5);
+    shardCtx.closePath();
+    shardCtx.fillStyle = s.col + al + ')';
+    shardCtx.shadowColor = s.col + al + ')';
+    shardCtx.shadowBlur = 6;
+    shardCtx.fill();
+    shardCtx.restore();
+  }
+  requestAnimationFrame(shardLoop);
+})();
+
+document.getElementById('dl-btn')?.addEventListener('click', e => {
+  const r = e.currentTarget.getBoundingClientRect();
+  burst(r.left + r.width / 2, r.top + r.height / 2);
+  sounds.playChime();
+});
+
+window.addEventListener('click', e => {
+  if(e.target.closest('button,a,input')) return;
+  burst(e.clientX, e.clientY);
+});
+
+/* ══════════════════════════════════════════════════════════════════
+   10. CUSTOM CURSOR
+   ══════════════════════════════════════════════════════════════════ */
+const curDot = document.getElementById('cur-dot');
+const curRing = document.getElementById('cur-ring');
+let trailX = 0, trailY = 0, tgtX = 0, tgtY = 0;
+window.addEventListener('mousemove', e => {
+  tgtX = e.clientX; tgtY = e.clientY;
+  curDot.style.transform = `translate(${e.clientX}px,${e.clientY}px) translate(-50%,-50%)`;
+});
+document.querySelectorAll('a,button,input,.card,.shot-card,#crystal-3d').forEach(el => {
+  el.addEventListener('mouseenter', () => curRing.classList.add('big'));
+  el.addEventListener('mouseleave', () => curRing.classList.remove('big'));
+});
+(function curLoop(){
+  trailX += (tgtX - trailX) * 0.12;
+  trailY += (tgtY - trailY) * 0.12;
+  curRing.style.transform = `translate(${trailX.toFixed(1)}px,${trailY.toFixed(1)}px) translate(-50%,-50%)`;
+  requestAnimationFrame(curLoop);
+})();
+
+/* ══════════════════════════════════════════════════════════════════
+   11. MAGNETIC BUTTONS (NATURAL SPRING PULL)
+   ══════════════════════════════════════════════════════════════════ */
+let mouseX = 0, mouseY = 0;
+window.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+const magBtns = [...document.querySelectorAll('.mag-btn')];
+const magState = magBtns.map(() => ({ox:0, oy:0}));
+(function magLoop(){
+  magBtns.forEach((el, i) => {
+    const r = el.getBoundingClientRect();
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    const dx = mouseX - cx, dy = mouseY - cy;
+    const d = Math.sqrt(dx * dx + dy * dy);
+    const s = magState[i];
+    if(d < 85){
+      const p = (1 - d / 85) * 0.32;
+      s.ox += (dx * p - s.ox) * 0.18;
+      s.oy += (dy * p - s.oy) * 0.18;
+    } else {
+      s.ox += (0 - s.ox) * 0.12;
+      s.oy += (0 - s.oy) * 0.12;
+    }
+    el.style.transform = `translate(${s.ox.toFixed(2)}px,${s.oy.toFixed(2)}px)`;
+  });
+  requestAnimationFrame(magLoop);
+})();
+
+/* ══════════════════════════════════════════════════════════════════
+   12. MODULES DATA & RENDER
+   ══════════════════════════════════════════════════════════════════ */
+const MODULES = {
+  COMBAT:['Aura','Aim Assist','Aim Bot','Anti Bot','Auto Anchor','Auto Armor','Auto Explosion','Auto Potion','Auto Soup','Auto Throw','Auto Totem','Back Track','Criticals','Elytra Target','Hitboxes','Knockback Tweaks','Trigger Bot','Velocity'],
+  MOVEMENT:['Air Stuck','Auto Sprint','Elytra Strafe','Flight','Grim Glide','High Jump','No Slow','Speed','Spider','Strafe','Super Firework','Timer','Water Speed'],
+  VISUALS:['Ambience','Anti Invisible','Beautifully','Cinematic Camera','Custom Fog','Donate Effects','ESP','Freelook','GrassierGrass','Interface','Kill Effects','Lyrics','Menu','Object Info','Position Predict','Pots Timer','Prediction','Removals','Sound ESP','Storage ESP','Swing Animation','TNT Timer','Target ESP','Trap ESP','View Model','Warden Helper','Waypoints','World','XRay'],
+  PLAYER:['Auto Bot','Auto Brew','Auto Eat','Auto Farm','Auto Invisible','Auto Leave','Auto Shulker','Auto Swap','Blink','Boots Swap','Clan Upgrade','Click Through','Elytra Utils','Free Camera','Gui Move','Inventory Utils','Middle Click','Mine Helper','No Delay','No Fall','No Interact','No Push','No Rotate','Nuker','Player Utils','Scaffold','Stealer','Target Pearl','Tracker'],
+  OTHER:['Adminsky','AntiAim','Assist','Auction','Auto Accept','Auto Auth','Auto Buy','Auto Duels','Auto Join','Auto Resell','Base Finder','Death Cords','Effect Remover','Fast Item Use','Globals Menu','Inventory Builder','Inventory Cleaner','Item Dumper','Item Pickup','KT Leave','Macro Menu','Name Protect','Panic','Russian Roulette','Sounds','Test','Web Utils']
+};
+const NEW_MODULES = new Set(['Lyrics']);
+const pillOf = (m,c) => `<span class="pill${NEW_MODULES.has(m)?' isnew':''}">${m}${c?`<span class="tc">${c}</span>`:''}</span>`;
+const side = document.getElementById('catSide'), grid = document.getElementById('modGrid'),
+  catName = document.getElementById('modCatName'), modCount = document.getElementById('modCount'),
+  search = document.getElementById('modSearch');
+let curCat = 'COMBAT';
+
+Object.keys(MODULES).forEach(c => {
+  const b = document.createElement('button');
+  b.className = 'cat-row' + (c === curCat ? ' active' : '');
+  b.innerHTML = `${c}<span class="cnt">${MODULES[c].length}</span>`;
+  b.onclick = () => {
+    sounds.playTone(580, 'sine', 0.05, 0.15);
+    search.value = ''; curCat = c;
+    side.querySelectorAll('.cat-row').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    swap(() => renderCat(c));
+  };
   side.appendChild(b);
 });
+
 function renderCat(c){
-  catName.textContent=c;modCount.textContent=MODULES[c].length+' мод.';
-  grid.innerHTML=MODULES[c].map(m=>pillOf(m,'')).join('');
+  catName.textContent = c; modCount.textContent = MODULES[c].length + ' мод.';
+  grid.innerHTML = MODULES[c].map(m => pillOf(m,'')).join('');
 }
 function renderSearch(q){
-  const res=[];Object.keys(MODULES).forEach(c=>MODULES[c].forEach(m=>{if(m.toLowerCase().includes(q))res.push({m,c});}));
-  catName.textContent='ПОИСК';modCount.textContent=res.length+' найдено';
-  grid.innerHTML=res.length?res.map(r=>pillOf(r.m,r.c)).join(''):'<span class="pill">ничего не нашлось, братан</span>';
+  const res = [];
+  Object.keys(MODULES).forEach(c => MODULES[c].forEach(m => {
+    if(m.toLowerCase().includes(q)) res.push({m,c});
+  }));
+  catName.textContent = 'ПОИСК'; modCount.textContent = res.length + ' найдено';
+  grid.innerHTML = res.length
+    ? res.map(r => pillOf(r.m,r.c)).join('')
+    : '<span class="pill">ничего не нашлось, братан</span>';
 }
-function swap(fn){grid.classList.add('swap');setTimeout(()=>{fn();grid.classList.remove('swap');},200);}
-search.addEventListener('input',()=>{const q=search.value.trim().toLowerCase();swap(()=>q?renderSearch(q):renderCat(curCat));});
+function swap(fn){
+  grid.classList.add('swap');
+  setTimeout(() => { fn(); grid.classList.remove('swap'); }, 180);
+}
+search.addEventListener('input', () => {
+  const q = search.value.trim().toLowerCase();
+  swap(() => q ? renderSearch(q) : renderCat(curCat));
+});
 renderCat(curCat);
 
+/* ══════════════════════════════════════════════════════════════════
+   13. REVIEWS LIVE TICKER
+   ══════════════════════════════════════════════════════════════════ */
 const REV_NAMES=['faraon','w1zerd','Hirrs','This_Dvoroviy','Sniper228rw','trfxcvii','DeepSeek','телпила #антикоч','Flick1337','xX_Pro_Xx','NightWare','pivozavr','quartz','Vladimir'];
-// ЗАМЕНИ: реальные сервера, где крутится клиент
 const REV_SERVERS=['HolyWorld','FunTime','VimeWorld','ReallyWorld','Mustard','Excalibur','Aurora','Neofusion'];
 const REV_TEXTS=[
   'Залетел на топ спавна на {s}, админы ходили рядом — ничего не спалили. Клиент топ.',
@@ -391,51 +2381,67 @@ const REV_TEXTS=[
   'ЕБАТЬ, я думал от фришки нечего ожидать, но ебать нурик перепенила, однозначно топ.',
   'Нейро-аура на {s} работает адекватно, таргета не палит. Наконец-то норм фри-клиент.',
   'Поставил билд 2.2 на {s}, меню не лагает, фпс почти не проседает. Респект разрабу.',
-  'Скептически относился к фри-клиентам, но StarDLC на {s} переубедил меня за вечер.',
   'ESP и X-Ray на {s} — просто праздник. Видно всё, что надо и даже что не надо.',
-  'Обновили в день выхода версии игры. Для бесплатного клиента это пушка.',
   'GUI на StarDLC — отдельный кайф, liquid glass, всё блестит. Лучший фри-клиент.',
-  'Текст песни в воздухе — это что-то. Стою на спавне {s}, слова собираются из букв и разлетаются. Очень атмосферно.',
+  'Текст песни в воздухе — это что-то. Стою на спавне {s}, слова собираются из букв. Очень атмосферно.',
   'Музыка прям в острове: переключаю треки, не открывая ни одного меню. Мелочь, а кайф.',
-  'Взял 2.2 ради текста песен, остался ради острова. На {s} всё летает, просадок нет.',
   '13 шрифтов на текст песни — подобрал под свой пак, теперь как в клипе. Кто делал — красавчик.'
 ];
 const AVA_COLORS=['#7c3aed','#a855f7','#c084fc','#6d28d9','#8b5cf6'];
-const feed=document.getElementById('revFeed');
-const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const feed = document.getElementById('revFeed');
+const rnd = a => a[Math.floor(Math.random() * a.length)];
+
 function addRev(){
-  if(feed.children.length>=5) killRev(feed.lastElementChild);
-  const name=rnd(REV_NAMES), srv=rnd(REV_SERVERS);
-  const el=document.createElement('div');
-  el.className='rev glass';
-  el.innerHTML=`<div class="head">
+  if(feed.children.length >= 5) killRev(feed.lastElementChild);
+  const name = rnd(REV_NAMES), srv = rnd(REV_SERVERS);
+  const el = document.createElement('div');
+  el.className = 'rev';
+  el.innerHTML = `
+    <div class="head">
       <div class="ava" style="background:${rnd(AVA_COLORS)}">${name[0]}</div>
       <div><span class="name">${name}</span><span class="srv">${srv}</span></div>
       <div class="stars">★★★★★</div>
     </div>
     <div class="text">${rnd(REV_TEXTS).replace('{s}',srv)}</div>`;
   feed.prepend(el);
-  requestAnimationFrame(()=>{el.classList.add('in');el.style.maxHeight=el.scrollHeight+44+'px';});
+  requestAnimationFrame(() => { el.classList.add('in'); el.style.maxHeight = el.scrollHeight + 44 + 'px'; });
 }
 function killRev(el){
-  if(!el||el.classList.contains('out'))return;
-  el.classList.add('out');el.classList.remove('in');
-  el.style.maxHeight='0px';el.style.marginTop='0px';
-  setTimeout(()=>el.remove(),600);
+  if(!el || el.classList.contains('out')) return;
+  el.classList.add('out'); el.classList.remove('in');
+  el.style.maxHeight = '0px'; el.style.marginTop = '0px';
+  setTimeout(() => el.remove(), 550);
 }
-addRev();setTimeout(addRev,400);setTimeout(addRev,800);
-setInterval(addRev,2800);
+addRev(); setTimeout(addRev, 400); setTimeout(addRev, 800);
+setInterval(addRev, 2800);
 
-document.querySelectorAll('.faq-q').forEach(q=>{
-  q.addEventListener('click',()=>{
-    const item=q.parentElement,a=item.querySelector('.faq-a'),open=item.classList.contains('open');
-    document.querySelectorAll('.faq-item.open').forEach(i=>{i.classList.remove('open');i.querySelector('.faq-a').style.maxHeight=0;});
-    if(!open){item.classList.add('open');a.style.maxHeight=a.scrollHeight+'px';}
+/* ══════════════════════════════════════════════════════════════════
+   14. FAQ ACCORDION
+   ══════════════════════════════════════════════════════════════════ */
+document.querySelectorAll('.faq-q').forEach(q => {
+  q.addEventListener('click', () => {
+    const item = q.parentElement;
+    const a = item.querySelector('.faq-a');
+    const open = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i => {
+      i.classList.remove('open');
+      i.querySelector('.faq-a').style.maxHeight = 0;
+    });
+    if(!open){
+      item.classList.add('open');
+      a.style.maxHeight = a.scrollHeight + 'px';
+      sounds.playTone(480, 'sine', 0.05, 0.2);
+    }
   });
 });
 
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');io.unobserve(e.target);}}),{threshold:.15});
-document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+/* ══════════════════════════════════════════════════════════════════
+   15. 3D SCROLL REVEAL (INTERSECTION OBSERVER)
+   ══════════════════════════════════════════════════════════════════ */
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if(e.isIntersecting){ e.target.classList.add('vis'); io.unobserve(e.target); }
+}), {threshold: 0.12});
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 </script>
 </body>
 </html>
